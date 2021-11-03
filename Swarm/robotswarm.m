@@ -29,6 +29,7 @@ Vy0=ICsize2*rand(1,N);
 X(1,1:N)=X0; Y(1,1:N)=Y0; % First dimension is time, second is N values of X (Y) position
 Vx(1,1:N)=Vx0; Vy(1,1:N)=Vy0; 
 
+% Set coordinates of vertices of triangle for starting formation
 pos_target=[25, 10;
                       20,5;
                       30,5];
@@ -58,15 +59,11 @@ for n=1:Tfinal/Tstep-1
     df0=2*rand(3,N)-1;
     
     % Save the position and velocity of each agent at current n.
-    pos_begin=[X(n,:)' Y(n,:)'];
-    vel_begin=[Vx(n,:)' Vy(n,:)'];
+    pos_begin=[X(n,:)' Y(n,:)']; % Forms a N X 2 array
+    vbar=mean([Vx(n,:)' Vy(n,:)']);
     
     % ErrorMatrix: 4xN, each column represents the error terms ([ep_x;ep_y;ev_x;ev_y]) of an agent.
-%     ErrorMatrix=[X(n,:)-xbar(1); 
-%                           Y(n,:)-xbar(2); 
-%                           Vx(n,:)-vbar(1); 
-%                           Vy(n,:)-vbar(2)];
-    ErrorMatrix=
+    ErrorMatrix=[X(n,:)'-pos_target(:,1) Y(n,:)'-pos_target(:,2) Vx(n,:)'-vbar(:,1) Vy(n,:)'-vbar(:,2)]';
 
     EP_hat=[X(n,:); Y(n,:)]; 
     % 2xN, [EP_hat(1,i); EP_hat(2,i)] is the position error of agent i with sensing error.
