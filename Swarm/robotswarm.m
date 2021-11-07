@@ -1,25 +1,27 @@
-clear all
+%% Initialization
+clear
 close all
 clc
 %load randstate; rand('state',rand_state);randn('state',randn_state);
 
-tic
+tic % Starting timer to start calculating elapsed time
 
-N=3;	% The number of agents (individuals) in swarm
+N=5;	% The number of agents (individuals) in swarm (Try user input later)
 k1=1;	% Chosen to get a stability property ('kp')
 k2=k1;  % Choose this k2>=0. Velocities converge to mean faster with larger k2. 
 kv=0.1;   % Velocity damping ('k')  (kv=10 for quadratic case?)
 kf=0.1;   % Gain on profile following (kf=50 for quadratic case?)
 b=10;  % Define parameters for repel function ('kr')
-c=1;  % Define parameter of rulpulsion region ('rs^2') 
+c=1;  % Define parameter of rulpulsion region ('rs^2')
+angle=60; % Defined vertex angle for triangle (Try user input later)
 
 % Define simulation parameters:
-Tfinal=80; % Units are seconds (keep it even)
+Tfinal=40; % Units are seconds (keep it even)
 Tstep=0.01;
 Tspan=0:Tstep:Tfinal+Tstep;
 
 % Define initial conditions:
-ICsize1=2; ICsize2=2;
+ICsize1=20; ICsize2=2;
 X0=ICsize1*rand(1,N)+3;   % Pick random values for initial positions in X and Y dimensions
 Y0=ICsize1*rand(1,N)+3;
 Vx0=ICsize2*rand(1,N);    % Pick random values for initial velocities in X and Y dimensions
@@ -30,9 +32,8 @@ X(1,1:N)=X0; Y(1,1:N)=Y0; % First dimension is time, second is N values of X (Y)
 Vx(1,1:N)=Vx0; Vy(1,1:N)=Vy0; 
 
 % Set coordinates of vertices of triangle for starting formation
-pos_target=[25, 10;
-                      20,5;
-                      30,5];
+% Here I plan to add a function that returns Nx2 array for agent starting formation
+pos_target=trianglecoordinates(N,angle);
 
 % Goal position of vehicle
 xgoal=[25; 25];
@@ -46,7 +47,9 @@ Dv2=value1/10;
 Df=value1;
 
 Dmax=1; % The magnitude of the noise. Since we use uniform noise of Matlab here, Dmax=1.
-ScaleU=10; % This is used to change the magnitude of the control input ux and uy. %10
+ScaleU=10; % This is used to change the magnitude of the control input ux and uy.
+
+%% Calculate values for each step
 
 for n=1:Tfinal/Tstep-1
     
@@ -63,7 +66,7 @@ for n=1:Tfinal/Tstep-1
     vbar=mean([Vx(n,:)' Vy(n,:)']);
     
     % ErrorMatrix: 4xN, each column represents the error terms ([ep_x;ep_y;ev_x;ev_y]) of an agent.
-    ErrorMatrix=[X(n,:)'-pos_target(:,1) Y(n,:)'-pos_target(:,2) Vx(n,:)'-vbar(:,1) Vy(n,:)'-vbar(:,2)]';
+    ErrorMatrix=[X(n,:)'-pos_target(:,1) Y(n,:)'-pos_target(:,2) Vx(n,:)'-vbar(:,1) Vy(n,:)'-vbar(:,2)]'; % Not used anywhere !!
 
     EP_hat=[X(n,:); Y(n,:)]; 
     % 2xN, [EP_hat(1,i); EP_hat(2,i)] is the position error of agent i with sensing error.
@@ -88,18 +91,22 @@ for n=1:Tfinal/Tstep-1
     end
     
     % Calculate the control input on two dimension x,y. Each u (i.e., ux, uy) is a 1xN vector.
-    ux=-k1*(X(n,:)-mean(X(n,:))) - k2*(Vx(n,:)-mean(Vx(n,:))) - kv*Vx(n,:) + xrepel - kf*(A(:,1)'); %Note A
-    uy=-k1*(Y(n,:)-mean(Y(n,:))) - k2*(Vy(n,:)-mean(Vy(n,:))) - kv*Vy(n,:) + yrepel - kf*(A(:,2)');
+    ux=-k1*(X(n,:)-pos_target(:,1)') - k2*(Vx(n,:)-mean(Vx(n,:))) - kv*Vx(n,:) + xrepel - kf*(A(:,1)'); %Note A
+    uy=-k1*(Y(n,:)-pos_target(:,2)') - k2*(Vy(n,:)-mean(Vy(n,:))) - kv*Vy(n,:) + yrepel - kf*(A(:,2)');
     
     % Calculates the position and velocity in the next time step (Euler's method).
     X(n+1,:)=X(n,:)+Vx(n,:)*Tstep;
     Y(n+1,:)=Y(n,:)+Vy(n,:)*Tstep;
+    %pos_target(:,1)=pos_target(:,1)-Vx(n,:)'*Tstep;
+    %pos_target(:,2)=pos_target(:,2)-Vx(n,:)'*Tstep;
     Vx(n+1,:)=Vx(n,:) + ux*ScaleU*Tstep;
     Vy(n+1,:)=Vy(n,:) + uy*ScaleU*Tstep;
     
 end
 
 t=[1:length(X)]'*Tstep; var=0; % Just for convenience such that the plot commands below, which was for continous time case, are still valid.
+
+%% Plotting
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Plot the swarm trajectories
@@ -179,7 +186,8 @@ if flagg~=1
         hold on;
         plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
         plot(Xd(j,:),Yd(j,:),'bo');
-        axis([min(min(X)) max(max(X)) min(min(Y)) max(max(Y))]);
+        %axis([min(min(X)) max(max(X)) min(min(Y)) max(max(Y))]);
+        axis([-2 30 -2 30]);
         xlabel('x')
         ylabel('y')
         title('Swarm agent position trajectories')
@@ -202,11 +210,6 @@ if flagg~=1
     %M(:,temp1d+1)=getframe; % Add last frame as figure(1)
     
     % Play the movie
-    
     %movie(M)
 end
 toc
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% End of program
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
