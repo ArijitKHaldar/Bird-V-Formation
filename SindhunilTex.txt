@@ -1,0 +1,417 @@
+documentclass[11pt]{article}
+usepackage{a4wide}
+%raggedright
+%usepackage{driverbook}
+usepackage{latexsym}           % math symbols that were omitted in latex2e
+usepackage{amsbsy}% bold greek defs
+usepackage{amssymb}
+usepackage{setspace}
+usepackage{amsmath}
+usepackage{epsfig}
+usepackage{mathtools}
+usepackage{xcolor}
+usepackage{multicol}
+usepackage{graphicx}
+usepackage{listings}
+usepackage{graphicx}
+usepackage{listings}
+usepackage{ragged2e}
+usepackage{breqn}
+usepackage[]{geometry}
+usepackage{color}   %May be necessary if you want to color links
+usepackage{hyperref}
+hypersetup{
+    colorlinks=true, %set true if you want colored links
+    linktoc=all,     %set to all if you want both sections and subsections linked
+    linkcolor=red,  %choose some color if you want links to stand out
+}
+setlength{voffset}{-0.25in}
+setlength{headsep}{15pt}
+setlength{oddsidemargin}{5pt}
+setlength{marginparwidth}{10pt}
+setlength{textwidth}{470pt}
+footskip=25pt
+textheight=653pt
+lstdefinestyle{mystyle}{
+    keywordstyle=color{magenta},
+    numberstyle=tinycolor{codegray},
+    stringstyle=color{codepurple},
+    basicstyle=ttfamilyfootnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+lstset{style=mystyle}
+DeclareMathOperator*{E}{mathbb{E}}
+
+begin{document}
+thispagestyle{empty}
+newcommand{vect}[1]{boldsymbol{#1}}
+newcommandnumberthis{addtocounter{equation}{1}tag{theequation}}
+{small
+begin{flushleft}
+   Name: Sindhunil Bhaumik\
+   2010802003\
+   M.E.E (Control System)\
+   Jadavpur University
+end{flushleft}
+}
+vspace{20ex}
+begin{center}
+    {LARGEbf Impact-Time-Control Guidance with Seeker’s Look Angle Constraint & An Introduction to Kalman Filtering and State Estimation}\
+    vspace{5ex}
+    {Large August 2021}
+
+vspace{5ex}
+{Largebf Seminar Report }\
+vspace{3ex}
+end{center}
+newpage
+thispagestyle{empty}
+doublespacing
+tableofcontents
+singlespacing
+newpage
+setcounter{page}{1}
+begin{flushleft}
+justifying
+section{LARGE bf Impact-Time-Control Guidance Considering Seeker's Look Angle Constraint}
+end{flushleft}
+vspace{3ex}
+begin{flushleft}
+subsection{Large bf Introduction}\
+end{flushleft}
+begin{flushleft}
+vspace{2ex}
+justifying
+In the previous semester, the Impact-Time-Control problem was formulated considering the constraint of seeker's look angle and the guidance solution was derived. Impact time is the time required by a missile to hit the intended target. The seeker is located in the front part of the missile. Seeker's look angle is defined as the angle between the missile's body axis and the line of sight (LOS). The seeker's look angle is constrained by the field of view of the seeker for successful target tracking. A planar homing guidance geometry for a missile against a fixed target was considered in the previous report. This report's work is basically an extension of that. Figure 1.1 represents the geometrical analysis of the motion of the missile. The missile speed $V_M$ is assumed to be constant throuout. $r$ represents the missile to target range. $gamma$ represents the flight path angle and $sigma$ represents the LOS angle. The control command that is of interest is denoted by $a_M$, an acceleration command that is applied perpendicular to missile velocity. 
+vspace{2ex}
+begin{center}
+    includegraphics[scale=0.6]{ITCG geometry.JPG}\
+    Figure 1.1: Guidance geometry [1]
+end{center}
+vspace{2ex}
+In the subsequent discussion of this chapter, some of the simulation results from [1] are verified. Due to a change of my seminar topic, a complete validation of all the simulation results was not possible within the specified time. Let us now analyse the simulation results. 
+end{flushleft}
+newpage
+begin{flushleft}
+subsection{Large bf Results}\
+vspace{2ex}
+justifying
+The mathematical analysis of the Impact Time Control Guidance (ITCG) solution was performed in the previous report. The solution process involved the consideration of some heuristic base functions with some given initial conditions. The missile range ($r$) was then obtained as a function of the heading error ($eta$) as shown.
+\
+begin{equation*}
+    r=a(eta+1)^k+frac{eta}{eta_0}[r_0+a{1-(eta_0+1)^k}]-a
+end{equation*}
+\
+The range of values of the coefficient $a$ is expressed as
+begin{equation*}
+    frac{r_0}{g_eta_0(eta_0,k)}<a<frac{r_0}{g_0(eta_0,k)}
+end{equation*}
+where $eta_0$ is the initial heading error and 
+begin{equation*}
+    g_eta_0(eta_0,k)=-keta_0(eta_0+1)^{k-1}+(eta_0+1)^k-1
+end{equation*}
+begin{equation*}
+    g_0(eta_0,k)=-keta_0+(eta_0+1)^k-1
+end{equation*}
+The target is assumed to be fixed at 1000 m apart from the missile which has an initial heading error of $70^o$. The constant $k$ has been chosen as -10. Depending upon different values of $a$ within its bounds, the admissible range profiles are generated as shown in figure 1.2. To gain some more insight about the effect of variation of parameters on the range profiles, another test condition is taken with $k=-50$. Figure 1.3 depicts the admissible range profiles for $k=-50$. It can be seen that
+\
+begin{center}
+    includegraphics[scale=0.7]{Admissible range profiles for different n.jpg}\
+    Figure 1.2: Admissible range profiles for k=-10
+end{center}
+newpage
+begin{center}
+    includegraphics[scale=1.1]{Admissible_range_profiles_for_k_50.jpg}\
+    Figure 1.3: Admissible range profiles for k=-50
+end{center}
+begin{center}
+    includegraphics[scale=0.64]{Admissible_range_rofiles_for_different_k.jpg}\
+    Figure 1.4: Admissible range profiles for different set of k values 
+end{center}
+end{flushleft}
+newpage
+begin{flushleft}
+the nature of the range profiles is similar but the curves are stiffer in the initial portion of the plot. Figure 1.4 represents the different range profiles for a particular $'a'$ value while $k$ ranging from -10 to -100. It is seen that as $k$ decreases, the curve gets stiffer. It seems that the gradual decrease is more suitable in which case the choice of $k$ should not be more negative.\
+vspace{4ex}
+subsection{Large bf  Conclusion and Scope of Future Work}\
+vspace{2ex}
+In this work, the results from [1] has been validated. The authors have proposed a new impact time guidance law based on the constraint of seeker's look angle in [1]. It has been guaranteed that the proposed law always decreases the seeker's look angle monotonously from the initial value to zero at intercept point so that it always satisfies the FOV constraint. In [1], a fixed target is assumed. Further studies can be carried out considering a moving target. Moreover, the aerodynamic drag force has not been taken into account. A more precise study can be carried out considering the effect of drag into account and dropping the assumption that the speed of the missile is constant throughout. \
+vspace{10ex}
+
+subsection{LARGE bf References}\
+vspace{2ex}
+[1] Jeon I.S. and Lee J.I, "Impact-Time-Control-Guidance Law With Constraints on
+Seeker Look Angle", IEEE Transactions on Aerospace and Electronic Systems, vol.
+53, pp. 2621-2627, Oct. 2017.
+end{flushleft}
+
+newpage
+begin{flushleft}
+section{LARGEbf Kalman Filtering and State Estimation}\
+end{flushleft}
+vspace{3ex}
+begin{flushleft}
+subsection{Large bf Introduction}\
+end{flushleft}
+begin{flushleft}
+justifying
+ Kalman Filtering, also known as Linear Quadratic Estimation (LDE) is an optimal estimation algorithm that uses a series of measurements observed over time, containing statistical noises and other inaccuracies, and produce estimates of unknown variables that tend to be more accurate than those based on a single measurement alone. In 1960, R.E. Kalman modified N. Weiner’s work in the 1940s based on minimizing the mean-square error considering the noisy measurement to be a discrete sequence in time in contrast to a continuous time signal. Although Kalman filter finds numerous applications over various fields of technology such as time series analysis used in signal processing, robotic motion planning and control, trajectory optimization, modelling of central nervous system’s control of movement etc, perhaps the most common and certainly the most significant application from the point of view of this report’s coverage is in the field of guidance, navigation and control of aircrafts, space crafts and dynamically positioned ships.\
+begin{center}
+    includegraphics[1.2]{An illustration of Kalman filter.JPG}
+end{center}
+begin{center}
+    Figure 2.1: An illustration of Kalman filtering
+end{center}
+ After the publication of Kalman’s work, engineers in the field of guidance, navigation and control were quick to see the Kalman technique as a practical solution to some applied filtering problems that were intractable using the previously available methods. We shall discuss the applicability of Kalman filter briefly in the context of missile technology. The key to a successful interception of a missile lies in precise target tracking technique, which may fail due to the presence of process noise and measurement noise in the system. Process noises appear due to modelling uncertainties whereas measurement noises come from atmospheric and numerous other conditions. Depending on the kinematics of the target, the exact position and velocity of the missile needs to be estimated at every instant of time. That is where Kalman filter works as a commendable solution. The problem has been illustrated with the help of figure 2.1. The actual path of a missile is shown with the help of solid black line. The filtering process starts with a rough estimate and depending upon the several measurements taken on the way (as represented by the red dots), the trajectory is estimated by the filter. It can be seen that the estimated trajectory eventually gets closer and closer to the actual trajectory over time. 
+vspace{4ex}
+end{flushleft}
+begin{flushleft}
+subsection{Large bf Formulation of Kalman Filtering Equations}\
+vspace{2ex}
+justifying
+Let us now proceed to develop the Kalman filter recursive equations. The optimization criteria used here is minimization of the mean-squared estimation error of the random variable x. From the preceding discussion, it is clear that one of the most important factors in Kalman filtering is the presence of noise. Although, the noises present in the system are completely random, we can still model them using known statistical distribution. It has been assumed in the discussion that both the process noise and measurement noise has zero mean white Gaussian distribution. This assumption is necessary for the optimality of Kalman filter.par
+   Let us assume that the random process to be estimated can be modelled in the following form [1]
+       begin{equation}
+          x_{k+1}=phi_kx_k+w_k
+       end{equation}
+       begin{equation}
+          z_k=H_kx_k+v_k
+       end{equation}
+   justifying
+   where $w_k$ and $v_k$ are the process noise and the measurement noise respectively. We assume that the system model i.e. $phi_k$, $H_k$ and the covariances describing $w_k$ and $v_k$ are known.\
+  \
+   $x_k=$ $(ntimes1)$ process state vector at time $t_k$\
+   $phi_k=$ $(ntimes n)$ matrix relating $x_k$ to $x_{k+1}$ or state transition matrix.\
+   $w_k=$ $(ntimes1)$ vector, assumed to be a white sequence with known covariance structure. It is the input white noise contribution to the state vector for the time interval $(t_k,t_{k+1})$\
+   $z_k=$ $(mtimes1)$ vector measurement at time %t_k$\
+   $H_k=$ $(mtimes n)$ matrix giving the ideal (noiseless) connection between the measurement and state vector at time $t_k$\
+   $v_k=$ $(mtimes1)$ measurement noise, assumed to be a white sequence with known covariance structure and having zero cross-correlation with $w_k$ sequence\
+   \
+   The covariance matrices for $w_k$ and $v_k$ are given as,
+   begin{center}
+       begin{align*}
+         E[w_kw_i^T]&=Q_k, i=k\
+         E[v_kv_i^T]&=R_k, i=k\
+         E[w_kv_i^T]&=0 forall k,i
+       end{align*}
+       \
+   end{center}
+
+   It is to be noted that the off diagonal entries of the covariance matrices are taken to be zero. Let us denote the estimated state prior to $t_k$ i.e. the textit{a priori} state estimate as $hat{x}_k^-$. The "super minus" denotes that this is our best estimate prior to measurement at $t_k$.We also define the estimated error to be
+ 
+   begin{equation}
+   \
+       e_k^-=x_k-hat{x}_k^-
+   end{equation}
+   \
+   and the associated error covariance matrix is
+  
+   \
+   begin{equation}
+       P_k^-=E[e_k^-e_k^-^T]=E[(x_k-hat{x}_k^-)(x_k-hat{x}_k^-)^T]
+   end{equation}
+   \
+   Now we seek to use the measurement $z_k$ to improve the prior estimate. We, thus choose a linear blending of the noisy measurement and the prior estimate as
+   \
+   begin{equation}
+       hat{x}_k=hat{x}_k^-+K_k(z_k-H_khat{x}_k^-)
+   end{equation}
+   \
+   where $hat{x}_k$= updated estimate and $K_k$= Blending factor (Kalman gain)
+   Let $x_k$ denote the updated i.e. textit{a posteriori} estimate. Corresponding estimation error is given by
+   \
+   begin{equation}
+       e_k=x_k-hat{x}_k
+   end{equation}
+   \
+   and the corresponding error covariance matrix associated with the updated estimate can be given by
+   \
+   begin{equation}
+       P_k=E[e_ke_k^T]=E[(x_k-hat{x}_k)(x_k-hat{x}_k)^T]
+   end{equation}
+   \
+   Now using (2), (5) can be written as  
+   \
+   begin{equation}
+       hat{x}_k=hat{x}_k^-+K_k(H_kx_k+v_k-H_khat{x}_k^-)
+   end{equation}
+   \
+   Substituting (5) in (7), we get
+   \
+   begin{align*}
+       P_k &= E{[(x_k-hat{x}_k^-)-K_k(H_kx_k+v_k-H_khat{x}_k^-)][(x_k-hat{x}_k^-)-K_k(H_kx_k+v_k-H_khat{x}_k^-)]^T}
+       \ \
+       &= E{[x_k(I-K_kH_k)-hat{x}_k^-(I-K_kH_k)-K_kv_k][x_k(I-K_kH_k)-hat{x}_k^-(I-K_kH_k)-K_kv_k]^T}
+       \ \
+       &= E{[(I-K_kH_k)(x_k-hat{x}_k^-)-K_kv_k][(I-K_kH_k)(x_k-hat{x}_k^-)-K_kv_k]^T}
+       \ \
+       &= E{[(I-K_kH_k)e_k^--K_kv_k][(I-K_kH_k)e_k^--K_kv_k]^T}
+       \ \
+       &= E{[(I-K_kH_k)e_k^--K_kv_k][e_k^-^T(I-K_kH_k)^T-v_k^TK_k^T]}
+       \ \
+       &= E{(I-K_kH_k)e_k^-e_k^-^T(I-K_kH_k)^T-(I-K_kH_k)v_k^TK_k^T-K_kv_ke_k^-^T(I-K_kH_k)^T+K_kv_kv_k^TK_k^T}
+   end{align*}
+   \
+   Noting that the textit{a priori} estimation error $e_k^-$ is uncorrelated with current measurement error $v_k$, we can write
+   \
+   begin{equation}
+       P_k=(I-K_kH_k)P_k^-(I-K_kH_k)^T+K_kR_kK_k^T
+   end{equation}\
+   Now we wish to find the particular $K_k$ that minimizes the individual terms along major diagonal of $P_k$, because these terms represent the estimation error variances for the elements of the state vector being estimated. Equation (9) can be expanded as
+   begin{align*}
+       P_k &= (I-K_kH_k)P_k^-(I-H_k^TK_k^T)+K_kR_kK_k^T
+       \ \
+       &= (I-K_kH_k)(P_k^--P_k^-H_k^TK_k^T)+K_kR_kK_k^T
+       \ \
+       &= P_k^--K_kH_kP_k^--P_k^-H_k^TK_k^T+K_k(H_kP_k^-H_k^T+R_k)K_k^T
+   end{align*}
+   \
+   Now, the optimality condition can be achieved by setting 
+   \
+   begin{equation*}
+       frac{d[Trace P_k}{dK_k}=0
+   end{equation*}
+   \
+   Noting that the trace of $P_k^-H_k^TK_k^T$ is equal to the trace of its transpose $K_kH_kP_k^-^T$, we get
+   \
+   begin{equation*}
+       -2(H_kP_k^-)^T+2K_k(H_kP_k^-H_k^T+R_k)=0
+   end{equation*}
+   \
+   which gives
+   \
+   begin{equation}
+     K_k=P_kH_k^T(H_kP_k^-H_k^T+R^k)^{-1}  
+   end{equation}
+   \
+   Equation (10) gives the optimal Kalman gain. This result follows from the fact that $P_k^-$ is a symmetric matrix. The error covariance matrix corresponding to the optimal estimate is, therefore,
+   \
+   begin{align*}
+       P_k^- &= P_k^--K_kH_kP_k^--P_k^-H_k^TK_k^T+K_k(H_kP_k^-H_k^T+R_k)K_k^T
+   end{align*}
+   \
+   which gives
+   \
+   begin{equation}
+     P_k=(I-K_kH_k)P_k^-  
+   end{equation}
+   \
+   Equation (11) gives the covariance matrix updation formula. The updated estimate $hat{x}_k$ is easily projected ahead via the transition matrix. We are justified in ignoring the contribution of $w_k$ because it has zero mean and is not correlated with any of the previous w's.
+   \
+   begin{equation*}
+       hat{x}_{k+1}^-=phi_khat{x}_k
+   end{equation*}
+   \
+   Hence, the estimation error associated with $hat{x}_{k+1}$ is given by
+       begin{align*}
+       hat{e}_{k+1}&=x_{k+1}-hat{x}_{k+1}^-
+       \ \
+       &= (phi_kx_k+w_k)-phi_khat{x}_k
+   end{align*}
+   which gives,
+   begin{equation*}
+       hat{e}_{k+1}=phi_ke_k+w_k
+   end{equation*}
+   \
+   Thus, the projected error covariance matrix is
+   \
+   begin{align*}
+     P_{k+1}^-&=E[e_{k+1}^-e_{k+1}^-^T]
+     \ \
+     &= E[(phi_ke_k+w_k)(phi_ke_k+w_k)^T]
+     \ \
+     &= E[phi_ke_ke_k^Tphi_k^T+phi_ke_kw_k^T+w_ke_k^Tphi_k^T+w_kw_k^T]
+   end{align*}
+   \
+   Noting that $w_k$ and $e_k$ has zero correlation, we arrive at
+   \
+   begin{equation}
+       P_{k+}^-=phi_kP_kphi_k^T+Q_k
+   end{equation}
+   \
+   We now have the needed quantities at time $t_{k+1}$, and the measurement $z_{k+1}$ can be assimilated just as in the previous step. \
+   begin{center}
+       includegraphics[scale=0.8]{Kalman filtering algorithm.JPG}
+       Figure 2.2: Kalman filtering algorithm
+   end{center}
+end{flushleft}
+newpage
+begin{flushleft}
+subsection{Large bf Simulation Results} \
+vspace{2ex}
+In this section, we shall take a system model and illustrate the Kalman filtering algorithm for the example system. For the sake of clear understanding, let us take a scalar example with the system description given as
+\
+begin{equation*}
+    x_{k+1}=Fx_k+Gu_k+w_k 
+end{equation*}
+begin{equation*}
+    z_k=Hx_k+v_k
+end{equation*}
+\ 
+justifying
+Let us take the values of the system constants as $F=1.0$, $G=0$, $H=1.0$. To start the Kalman filter, we need some initial conditions and the knowledge of associated process and measurement noises. In this example we shall take the process noise covariance $Q=0$ and measurement noise covariance $R=0.1$. Also, the initial error covariance is given as $P_0=0.05$. par
+In practical situations, most of the times it is difficult to exactly know the initial conditions for all the states. However, for the sake of simulation, it is assumed that the true initial state is known and given as $x(0)=1.0$. To perform the Monte Carlo simulation, a number of normally distributed random numbers equal to the number of Monte Carlo runs has been generated depending on the initial error covariance to generate a population of initial error. For each run, The initial estimated state to start the Kalman filter has been generated by adding the initial error corresponding to the specific run to the true initial state. A total of 1000 Monte Carlo runs have been taken for the simulation. par
+Figure 2.3 shows the true and estimated state trajectories of Run 1 for 20 seconds. It is evident from the plot that the estimated state trajectory tends to follow the true state trajectory as time progresses. Figure 2.4 shows the plot of error covariance for run 1. Starting from an initial value of 0.05, it gradually converges to zero. 
+\
+begin{center}
+    includegraphics[]{States_run_1.JPG}\
+    Figure 2.3: True and estimated states for run 1
+end{center}
+\
+newpage
+begin{center}
+    includegraphics[]{Error_cov_run_1.JPG}\
+    Fig 2.4: Error covariance for run 1
+end{center}
+\
+It is interesting to see that the plot of error covariance does not change from run to run. To establish the fact, in figure 2.5, the mean squared estimation error is calculated for each run and plotted against time and compared with the error covariance plot of any particular run (run , in this case) on the same graph. It is then verified that the two plots coincide with very little error. \
+begin{center}
+    includegraphics[scale=0.56]{MSE_and_P_comparison.JPG}\
+    Figure 2.5: Comparison between MSE and error covariance
+end{center}
+end{flushleft}
+newpage
+begin{flushleft}
+subsection{Large bf Application of Kalman Filtering and State Estimation in Guidance, Navigation and Control}\
+vspace{2ex}
+justifying
+Kalman filter finds extensive application in the filed of guidance, navigation and control. A lot of research has been carried out involving the use of Kalman filters in various guidance applications. S.Y Lin (2019) proposed a novel online estimation and compensation method for strapdown phase array seeker Disturbance Rejection Effect  using extended state kalman filter (ESKF). The authors used this method to estimate radome error slope and beam pointing error slope to compensate Line of Sight (LOS) angular rate output value in real time. G.J Zhang (2005) proposed a method of inertial LOS rate is estimated by using at unscented kalman filter to cope with the high nonlinearity and serious measurement noise contained in the strapdown imaging guidance system [3]. The results are compared with that of extended kalman filter to prove its superiority. In [4], P. Wang (2014) proposed an LOS rate extraction method based on nonlinear Tracking-Differentiator and Unscented Kalman Filter is proposed to overcome the difficulties of coupling of measurement system with body attitude motion of strapdown guidance system. C. Wang (2016) suggested a method based on extended kalman filter has been proposed to estimate the LOS angle and rate of the strapdown laser seeker, and a hardware in loop simulation platform is established to evaluate the method [5]. Also, the authors have matched the results with the mathematical model of the conventional gimbaled. seeker. The effect of interference on missile seeker has been discussed in [6]. In this work, S.A Elgamel (2009) used kalman filter as a linear estimator to minimize the mean squared error of the LOS tracking angle due to interference. In [7], J. Waldermann (2002) proposed a linearizing feedback control law for decoupling missile motion from that of the seeker based on EKF model and its estimates. Seeker dynamics and control are then integrated into a dynamic model that is guided by proportional navigation. W. Mi (2018) proposed an adaptive unscented kalman filtering algorithm to reasonably improve the robustness and precision of LOS rate estimation [8]. The simulation results show that the proposed algorithm has higher accuracy and stability for the application of strapdown seekers. The simulation results show that the proposed algorithm has higher accuracy and stability for the application of strapdown seekers. The simulation results show that the proposed algorithm has higher accuracy and stability for the application of strapdown seekers.
+end{flushleft}
+vspace{2ex}
+begin{flushleft}
+subsection{Large bf Scope of Future Work}\
+vspace{2ex}
+justifying
+In my upcoming thesis work, I would like to work on the Line of Sight rate extraction of strapdown RF seeker using Kalman filter. The detector of strapdown seeker is fixed rigidly to the missile body as compared to traditional seekers using inertial platform. As a result, the main disadvantage of the strapdown seeker is that only LOS angle relative to body coordinates can be measured by it. A coordinate transformation is needed to transfer the variables of interest to inertial reference frame. The transformation introduces high nonlinearity to the system. Also the measurement noise is more severe than normal systems. I am hoping to devote my future work towards developing novel methods of decoupling the measurements from the body attitude motion using Kalman filter. 
+end{flushleft}
+newpage
+begin{flushleft}
+subsection{Large bf References}\
+vspace{3ex}
+$[1]$ R.G. Brown and P.Y. Hwang, textit{Introduction to Random Signals and Applied Kalman Filtering with MATLAB Exercises, $4^{ed}$ ed. Wiley, 1983.} \ 
+vspace{2ex}
+$[2]$ S.Y Lin, D. Lin and W. Wang, “ A Novel Online Estimation and Compensation Method for Strapdown Phased Array Seeker Disturbance Rejection Effect Using Extended State Kalman Filter”, IEEE Access, vol. 7, 2019. \
+vspace{2ex}
+$[3]$ G.J Zhang, Y. Yao and K.M Ma, “ Line of Site Rate Estimation of Strapdown Imaging Guidance System Based on Unscented Kalman Filter”, International Conference on Machine Learning and Cybernetics, Aug. 2005. \
+vspace{2ex}
+$[4]$ P. Wang and K. Zhang “Research on Line-of-Sight Rate Extraction of Strapdown Seeker”, Proceedings of the 33rd Chinese Control Conference, July. 2014. \
+vspace{2ex}
+$[5]$ C. Wang, Y. Liu and J. Song, “A Hardware-in-loop Simulation for LOS Rate Estimation of Strapdown Seeker Based on EKF’, 14th International Conference on Control, Automation, Robotics and Vision (ICARCV), Nov. 2016. \
+vspace{2ex}
+$[6]$ S.A Elgamel and J. Soraghan, “Target Tracking Enhancement Using a Kalman Filter in the Presence of Interference”, IEEE International Geoscience and Remote Sensing Symposium, July. 2009. \
+vspace{2ex}
+$[7]$ ] J. Waldermann, “Line of Sight Rate Estimation and Linearizing Control of an Imaging Seeker in a Tactical Missile Guided by Proportional Navigation”, IEEE Transactions on Control Systems Technology, vol. 10, Issue: 4, pp. 556-567, Jul. 2002. \
+vspace{2ex}
+$[8]$ W. Mi, J. Shan and Y. Liu, "Adaptive Unscented Kalman Filter Based Line of Sight Rate for Strapdown Seeker,"Chinese Automation Congress (CAC), 2018.
+
+end{flushleft}
+
+end{document}
