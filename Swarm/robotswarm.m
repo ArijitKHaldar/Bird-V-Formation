@@ -2,7 +2,6 @@
 clear
 close all
 clc
-%load randstate; rand('state',rand_state);randn('state',randn_state);
 
 tic % Starting timer to start calculating elapsed time
 
