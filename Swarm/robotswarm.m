@@ -20,7 +20,7 @@ Tstep=0.01;
 Tspan=0:Tstep:Tfinal+Tstep;
 
 % Define initial conditions:
-ICsize1=20; ICsize2=2;
+ICsize1=2; ICsize2=2;
 X0=ICsize1*rand(1,N)+3;   % Pick random values for initial positions in X and Y dimensions
 Y0=ICsize1*rand(1,N)+3;
 Vx0=ICsize2*rand(1,N);    % Pick random values for initial velocities in X and Y dimensions
@@ -96,8 +96,8 @@ for n=1:Tfinal/Tstep-1
     % Calculates the position and velocity in the next time step (Euler's method).
     X(n+1,:)=X(n,:)+Vx(n,:)*Tstep;
     Y(n+1,:)=Y(n,:)+Vy(n,:)*Tstep;
-    %pos_target(:,1)=pos_target(:,1)-Vx(n,:)'*Tstep;
-    %pos_target(:,2)=pos_target(:,2)-Vx(n,:)'*Tstep;
+    pos_target(:,1)=pos_target(:,1)+0.5*Tstep;
+    pos_target(:,2)=pos_target(:,2)+0.5*Tstep;
     Vx(n+1,:)=Vx(n,:) + ux*ScaleU*Tstep;
     Vy(n+1,:)=Vy(n,:) + uy*ScaleU*Tstep;
     
@@ -157,8 +157,8 @@ hold off
 toc
 
 % Next, produce a movie:
-%flagg=1;  % Set to 0 if want to see a movie
-flagg=0;
+flagg=1;  % Set to 0 if want to see a movie
+%flagg=0;
 Xd=[];Yd=[];
 tic
 if flagg~=1
