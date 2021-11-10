@@ -96,8 +96,8 @@ for n=1:Tfinal/Tstep-1
     % Calculates the position and velocity in the next time step (Euler's method).
     X(n+1,:)=X(n,:)+Vx(n,:)*Tstep;
     Y(n+1,:)=Y(n,:)+Vy(n,:)*Tstep;
-    pos_target(:,1)=pos_target(:,1)+0.5*Tstep;
-    pos_target(:,2)=pos_target(:,2)+0.5*Tstep;
+    pos_target(:,1)=pos_target(:,1)+0.45*Tstep;
+    pos_target(:,2)=pos_target(:,2)+0.45*Tstep;
     Vx(n+1,:)=Vx(n,:) + ux*ScaleU*Tstep;
     Vy(n+1,:)=Vy(n,:) + uy*ScaleU*Tstep;
     
@@ -136,24 +136,78 @@ else
     temparray = 1:temp1;
 end
 
-figure(1)
-clf
-contour(xx,yy,zz+zzz,40)
-colormap(jet)
-% Use next line for generating plots to put in black and white documents.
-%colormap(gray)
-hold on
-plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
-hold on
-plot(X(temparray,:),Y(temparray,:),'LineStyle',':') 
-xlabel('x')
-ylabel('y')
-title('Swarm agent position trajectories')
-hold on
-plot(X0,Y0,'bx')
-hold on
-plot(X(temp1,:),Y(temp1,:),'ro');
-hold off
+figure(1) %Plot initialized agents' positions and final goal coordinate
+    clf
+    contour(xx,yy,zz+zzz,40)
+    colormap(jet)
+    % Use next line for generating plots to put in black and white documents.
+    %colormap(gray)
+    hold on;
+    xlabel('x')
+    ylabel('y')
+    title('J=w_1J_o + w_2J_g and initial (square) and goal (x) positions');
+    % Plot initial and final positions
+    plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
+    plot(X0,Y0,'bx')
+    hold off;
+
+
+figure(2) % Plot variation of position of agents along X and Y axes
+    clf
+    subplot(2,1,1)
+    grid on;
+    hold on;
+    plot(t(temparray,:),X(temparray,:),'linewidth',1)
+    axis([0, floor(max(t)/10)*10*(t(end)>=10)+t(end)*(t(end)<10), floor(min(min(X))/10)*10, ceil(max(max(X))/10)*10]);
+    title('Swarm agent position trajectories, x dimension')
+    xlabel('Time, sec.')
+    hold off;
+
+    subplot(2,1,2)
+    grid on;
+    hold on;
+    plot(t(temparray,:),Y(temparray,:),'linewidth',1)
+    axis([0, floor(max(t)/10)*10*(t(end)>=10)+t(end)*(t(end)<10), floor(min(min(Y))/10)*10, ceil(max(max(Y))/10)*10]);
+    title('Swarm agent position trajectories, y dimension')
+    xlabel('Time, sec.')
+    hold off;
+
+figure(3) % Plot variation of velocity of agents along X and Y axes
+    clf
+    subplot(2,1,1)
+    grid on;
+    hold on;
+    plot(t(temparray,:),Vx(temparray,:),'linewidth',1)
+    axis([0, floor(max(t)/10)*10*(t(end)>=10)+t(end)*(t(end)<10), floor(min(min(Vx))/10)*10, ceil(max(max(Vx))/10)*10]);
+    title('Swarm velocities, x dimension')
+    xlabel('Time, sec.')
+    axis([0,Tfinal,-20,20]);
+    hold off;
+
+    subplot(2,1,2)
+    grid on;
+    hold on;
+    plot(t(temparray,:),Vy(temparray,:),'linewidth',1)
+    axis([0, floor(max(t)/10)*10*(t(end)>=10)+t(end)*(t(end)<10), floor(min(min(Vy))/10)*10, ceil(max(max(Vy))/10)*10]);
+    title('Swarm velocities, y dimension')
+    xlabel('Time, sec.')
+    axis([0,Tfinal,-20,20]);
+    hold off;
+
+
+figure(4) % Plot trajectory of path taken by agents to reach goal from beginning
+    clf
+    contour(xx,yy,zz+zzz,40)
+    colormap(jet)
+    hold on;
+    plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
+    title('Swarm agent position trajectories')
+    plot(X(temparray,:),Y(temparray,:),'LineStyle',':') 
+    xlabel('x')
+    ylabel('y')
+    plot(X0,Y0,'bx')
+    plot(X(temp1,:),Y(temp1,:),'ro');
+    hold off;
 toc
 
 % Next, produce a movie:
@@ -163,7 +217,7 @@ Xd=[];Yd=[];
 tic
 if flagg~=1
     
-    figure(2)
+    figure(5)
     clf
     axis([min(min(X)) max(max(X)) min(min(Y)) max(max(Y))]);
     
@@ -199,13 +253,9 @@ if flagg~=1
     xlabel('x')
     ylabel('y')
     title('Swarm agent position trajectories')
-    hold on
     plot(X0,Y0,'bx');
-    hold on
     plot(X(temp1,:),Y(temp1,:),'ro');
-    hold on;
     plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
-    
     %M(:,temp1d+1)=getframe; % Add last frame as figure(1)
     
     % Play the movie
