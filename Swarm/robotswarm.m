@@ -4,6 +4,7 @@ close all
 clc
 
 tic % Starting timer to start calculating elapsed time
+fprintf("Start simulation\n")
 
 N=5;	% The number of agents (individuals) in swarm (Try user input later)
 k1=1;	% Chosen to get a stability property ('kp')
@@ -148,7 +149,7 @@ figure(1) %Plot initialized agents' positions and final goal coordinate
     title('J=w_1J_o + w_2J_g and initial (square) and goal (x) positions');
     % Plot initial and final positions
     plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
-    plot(X0,Y0,'bx')
+    plot(X0,Y0,'bs')
     hold off;
 
 
@@ -205,17 +206,19 @@ figure(3) % Plot trajectory of path taken by agents to reach goal from beginning
     plot(X(temparray,:),Y(temparray,:),'LineStyle',':') 
     xlabel('x')
     ylabel('y')
-    plot(X0,Y0,'bx')
+    plot(X0,Y0,'bs')
     plot(X(temp1,:),Y(temp1,:),'ro');
     hold off;
+fprintf("End of plotting using %d seconds as simulation time.\n",Tfinal)
 toc
 
 % Next, produce a movie:
 flagg=1;  % Set to 0 if want to see a movie
 %flagg=0;
 Xd=[];Yd=[];
-tic
 if flagg~=1
+    tic
+    fprintf("\nStarting animated plot...please wait...\n")
     
     figure(4)
     clf
@@ -238,7 +241,7 @@ if flagg~=1
         colormap(jet);
         hold on;
         plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
-        plot(Xd(j,:),Yd(j,:),'bo');
+        plot(Xd(j,:),Yd(j,:),'ro');
         %axis([min(min(X)) max(max(X)) min(min(Y)) max(max(Y))]);
         axis([-2 30 -2 30]);
         xlabel('x')
@@ -253,12 +256,13 @@ if flagg~=1
     xlabel('x')
     ylabel('y')
     title('Swarm agent position trajectories')
-    plot(X0,Y0,'bx');
+    plot(X0,Y0,'bs');
     plot(X(temp1,:),Y(temp1,:),'ro');
     plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
     %M(:,temp1d+1)=getframe; % Add last frame as figure(1)
     
     % Play the movie
     %movie(M)
+    fprintf("End of animated plot\n")
+    toc
 end
-toc
