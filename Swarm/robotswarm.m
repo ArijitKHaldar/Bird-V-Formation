@@ -152,9 +152,10 @@ figure(1) %Plot initialized agents' positions and final goal coordinate
     hold off;
 
 
-figure(2) % Plot variation of position of agents along X and Y axes
+figure(2)
     clf
-    subplot(2,1,1)
+% Plot variation of position of agents along X and Y axes
+    subplot(2,2,1)
     grid on;
     hold on;
     plot(t(temparray,:),X(temparray,:),'linewidth',1)
@@ -163,7 +164,7 @@ figure(2) % Plot variation of position of agents along X and Y axes
     xlabel('Time, sec.')
     hold off;
 
-    subplot(2,1,2)
+    subplot(2,2,3)
     grid on;
     hold on;
     plot(t(temparray,:),Y(temparray,:),'linewidth',1)
@@ -172,9 +173,8 @@ figure(2) % Plot variation of position of agents along X and Y axes
     xlabel('Time, sec.')
     hold off;
 
-figure(3) % Plot variation of velocity of agents along X and Y axes
-    clf
-    subplot(2,1,1)
+% Plot variation of velocity of agents along X and Y axes
+    subplot(2,2,2)
     grid on;
     hold on;
     plot(t(temparray,:),Vx(temparray,:),'linewidth',1)
@@ -184,7 +184,7 @@ figure(3) % Plot variation of velocity of agents along X and Y axes
     axis([0,Tfinal,-20,20]);
     hold off;
 
-    subplot(2,1,2)
+    subplot(2,2,4)
     grid on;
     hold on;
     plot(t(temparray,:),Vy(temparray,:),'linewidth',1)
@@ -195,7 +195,7 @@ figure(3) % Plot variation of velocity of agents along X and Y axes
     hold off;
 
 
-figure(4) % Plot trajectory of path taken by agents to reach goal from beginning
+figure(3) % Plot trajectory of path taken by agents to reach goal from beginning
     clf
     contour(xx,yy,zz+zzz,40)
     colormap(jet)
@@ -217,7 +217,7 @@ Xd=[];Yd=[];
 tic
 if flagg~=1
     
-    figure(5)
+    figure(4)
     clf
     axis([min(min(X)) max(max(X)) min(min(Y)) max(max(Y))]);
     
