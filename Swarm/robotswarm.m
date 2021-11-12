@@ -1,6 +1,6 @@
 %% Initialization
 clear
-close all
+close all hidden
 clc
 
 tic % Starting timer to start calculating elapsed time
@@ -48,6 +48,11 @@ Df=value1;
 
 Dmax=1; % The magnitude of the noise. Since we use uniform noise of Matlab here, Dmax=1.
 ScaleU=10; % This is used to change the magnitude of the control input ux and uy.
+xrepel=zeros(1,N);
+yrepel=zeros(1,N);
+
+
+
 
 %% Calculate values for each step
 
@@ -80,7 +85,7 @@ for n=1:Tfinal/Tstep-1
         yrepel(i)=sum(b*exp(-dist.^2/c).*(Y(n,i)-Y(n,:)));
     end
     % The 'for' loop below calculates the discrete gradient for each agent at current position.
-    A=[];
+    A=zeros(N,2);
     for i=1:N
         NowJ=goalfunction0([X(n,i);Y(n,i)],xgoal,w2) + obstaclefunction([X(n,i);Y(n,i)],w1);
         partial_x=Vx(n,i)*Tstep;
@@ -104,7 +109,9 @@ for n=1:Tfinal/Tstep-1
     
 end
 
-t=[1:length(X)]'*Tstep; var=0; % Just for convenience such that the plot commands below, which was for continous time case, are still valid.
+t=(1:length(X))'*Tstep; var=0; % Just for convenience such that the plot commands below, which was for continous time case, are still valid.
+
+
 
 %% Plotting
 
@@ -207,16 +214,16 @@ figure(3) % Plot trajectory of path taken by agents to reach goal from beginning
     xlabel('x')
     ylabel('y')
     plot(X0,Y0,'bs')
-    plot(X(temp1,:),Y(temp1,:),'ro');
+    plot(X(temp1,:),Y(temp1,:),'ro','LineWidth',2);
     hold off;
 fprintf("End of plotting using %d seconds as simulation time.\n",Tfinal)
 toc
 
 % Next, produce a movie:
-flagg=1;  % Set to 0 if want to see a movie
-%flagg=0;
+%flagg=1;  % Set to 1 if want to see a movie
+flagg=0;
 Xd=[];Yd=[];
-if flagg~=1
+if flagg==1
     tic
     fprintf("\nStarting animated plot...please wait...\n")
     
@@ -241,7 +248,7 @@ if flagg~=1
         colormap(jet);
         hold on;
         plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
-        plot(Xd(j,:),Yd(j,:),'ro');
+        plot(Xd(j,:),Yd(j,:),'ro','LineWidth',2);
         %axis([min(min(X)) max(max(X)) min(min(Y)) max(max(Y))]);
         axis([-2 30 -2 30]);
         xlabel('x')
@@ -257,7 +264,7 @@ if flagg~=1
     ylabel('y')
     title('Swarm agent position trajectories')
     plot(X0,Y0,'bs');
-    plot(X(temp1,:),Y(temp1,:),'ro');
+    plot(X(temp1,:),Y(temp1,:),'ro','LineWidth',2);
     plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
     %M(:,temp1d+1)=getframe; % Add last frame as figure(1)
     
