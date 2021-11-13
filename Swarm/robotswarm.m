@@ -102,8 +102,8 @@ for n=1:Tfinal/Tstep-1
     % Calculates the position and velocity in the next time step (Euler's method).
     X(n+1,:)=X(n,:)+Vx(n,:)*Tstep;
     Y(n+1,:)=Y(n,:)+Vy(n,:)*Tstep;
-    pos_target(:,1)=pos_target(:,1)+0.45*Tstep;
-    pos_target(:,2)=pos_target(:,2)+0.45*Tstep;
+    %pos_target(:,1)=pos_target(:,1)+0.45*Tstep; % Paused movement temporarily to view rotation
+    %pos_target(:,2)=pos_target(:,2)+0.45*Tstep; % Paused movement temporarily to view rotation
     Vx(n+1,:)=Vx(n,:) + ux*ScaleU*Tstep;
     Vy(n+1,:)=Vy(n,:) + uy*ScaleU*Tstep;
     
