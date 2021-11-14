@@ -225,8 +225,8 @@ fprintf("End of plotting using %d seconds as simulation time.\n",Tfinal)
 toc
 
 % Next, produce a movie:
-flagg=1;  % Set to 1 if want to see a movie
-%flagg=0;
+%flagg=1;  % Set to 1 if want to see a movie
+flagg=0;
 Xd=[];Yd=[];
 if flagg==1
     tic
