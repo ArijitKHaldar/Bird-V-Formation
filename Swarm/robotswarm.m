@@ -14,6 +14,7 @@ kf=0.1;   % Gain on profile following (kf=50 for quadratic case?)
 b=10;  % Define parameters for repel function ('kr')
 c=1;  % Define parameter of rulpulsion region ('rs^2')
 angle=60; % Defined vertex angle for triangle (Try user input later)
+theta=-47; % For rotation of orientation
 
 % Define simulation parameters:
 Tfinal=40; % Units are seconds (keep it even)
@@ -50,6 +51,10 @@ Dmax=1; % The magnitude of the noise. Since we use uniform noise of Matlab here,
 ScaleU=10; % This is used to change the magnitude of the control input ux and uy.
 xrepel=zeros(1,N);
 yrepel=zeros(1,N);
+
+R = [cosd(theta) -sind(theta); 
+     sind(theta) cosd(theta)];
+pos_target = (R*(pos_target'-pos_target(1,:)')+pos_target(1,:)')';
 
 
 
@@ -102,8 +107,8 @@ for n=1:Tfinal/Tstep-1
     % Calculates the position and velocity in the next time step (Euler's method).
     X(n+1,:)=X(n,:)+Vx(n,:)*Tstep;
     Y(n+1,:)=Y(n,:)+Vy(n,:)*Tstep;
-    %pos_target(:,1)=pos_target(:,1)+0.45*Tstep; % Paused movement temporarily to view rotation
-    %pos_target(:,2)=pos_target(:,2)+0.45*Tstep; % Paused movement temporarily to view rotation
+    pos_target(:,1)=pos_target(:,1)+0.45*Tstep; % Paused movement temporarily to view rotation
+    pos_target(:,2)=pos_target(:,2)+0.45*Tstep; % Paused movement temporarily to view rotation
     Vx(n+1,:)=Vx(n,:) + ux*ScaleU*Tstep;
     Vy(n+1,:)=Vy(n,:) + uy*ScaleU*Tstep;
     
@@ -220,8 +225,8 @@ fprintf("End of plotting using %d seconds as simulation time.\n",Tfinal)
 toc
 
 % Next, produce a movie:
-%flagg=1;  % Set to 1 if want to see a movie
-flagg=0;
+flagg=1;  % Set to 1 if want to see a movie
+%flagg=0;
 Xd=[];Yd=[];
 if flagg==1
     tic
