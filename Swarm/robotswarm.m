@@ -13,8 +13,6 @@ kv=0.1;   % Velocity damping ('k')  (kv=10 for quadratic case?)
 kf=0.1;   % Gain on profile following (kf=50 for quadratic case?)
 b=10;  % Define parameters for repel function ('kr')
 c=1;  % Define parameter of rulpulsion region ('rs^2')
-angle=60; % Defined vertex angle for triangle (Try user input later)
-theta=-47; % For rotation of orientation
 
 % Define simulation parameters:
 Tfinal=40; % Units are seconds (keep it even)
@@ -32,10 +30,6 @@ Vy0=ICsize2*rand(1,N);
 X(1,1:N)=X0; Y(1,1:N)=Y0; % First dimension is time, second is N values of X (Y) position
 Vx(1,1:N)=Vx0; Vy(1,1:N)=Vy0; 
 
-% Set coordinates of vertices of triangle for starting formation
-% Here I plan to add a function that returns Nx2 array for agent starting formation
-pos_target=trianglecoordinates(N,angle);
-
 % Goal position of vehicle
 xgoal=[25; 25];
 w1=120; 		% Set weighting factors on the goal function and obstacle function
@@ -52,24 +46,71 @@ ScaleU=10; % This is used to change the magnitude of the control input ux and uy
 xrepel=zeros(1,N);
 yrepel=zeros(1,N);
 
-R = [cosd(theta) -sind(theta); 
-     sind(theta) cosd(theta)];
+
+% Set coordinates of vertices of triangle for starting formation
+% Here I plan to add a function that returns Nx2 array for agent starting formation
+angle=60; % Defined vertex angle for triangle (Try user input later)
+pos_target=trianglecoordinates(N,angle);
+
+theta=deg2rad(-47); % For rotation of orientation
+R = [cos(theta) -sin(theta); 
+     sin(theta) cos(theta)];
 pos_target = (R*(pos_target'-pos_target(1,:)')+pos_target(1,:)')';
 
 
 
 
+%% Sensing parameters
+k1_sense=2.5;	
+k2_sense=2.5;   
+kv_sense=0.35;   
+kf_sense=0.35;   
+b_sense=15;  
+c_sense=1;  
+
 %% Calculate values for each step
 
+fprintf('\nSensing & Circle fitting...Please Wait...\nThis might take a long time...\n')
+
 for n=1:Tfinal/Tstep-1
+
+    %tic
+    if(n==1)
+        [X_virAgent,Y_virAgent,Vx_virAgent,Vy_virAgent]=mapNearbySpace_desTraj(k1_sense,k2_sense,kv_sense,kf_sense,b_sense,c_sense,xgoal);
+    else 
+        [X_virAgent,Y_virAgent,Vx_virAgent,Vy_virAgent]=mapNearbySpace_up_desTraj(k1_sense,k2_sense,kv_sense,kf_sense,b_sense,c_sense,X_virAgent,Y_virAgent,Vx_virAgent,Vy_virAgent,xgoal);
+    end
+    %fprintf('\nSensing\n')
+    %toc
+
+    X_VAgent(n+1,:) = X_virAgent(end,:);
+    Y_VAgent(n+1,:) = Y_virAgent(end,:);
     
-    % Note: We use uniform noise here. And a '2*' and '-1' is used to guarantee the noise 
-    % is zero-mean, otherwise it won't be able to follow the given plane profile.
-    dp1=2*rand(3,N)-1;
-    dv1=2*rand(3,N)-1; 
-    dp2=2*rand(3,N)-1; 
-    dv2=2*rand(3,N)-1; 
-    df0=2*rand(3,N)-1;
+    % create more span
+    coor_x = [X_virAgent(end-5,:);X_virAgent(end,:)];
+    coor_y = [Y_virAgent(end-5,:);Y_virAgent(end,:)];
+    
+
+    
+    % fit in a circular region around the sensing coordinates
+    %tic
+    P = CircleFitByPratt([coor_x(:)';coor_y(:)']);
+    %fprintf('\n\nmainCircle fit\n')
+    %toc
+    
+    loc_spline = [P(1,1) P(1,2)];
+    cirCenter(n,:) = loc_spline;
+    
+    [X_dash,Y_dash] = findCirclePoints(P);
+    X_dash = X_dash';
+    Y_dash = Y_dash';
+    Circle_Co{:,n} = [X_dash;Y_dash];
+    
+    % plot the circular region over sensing info
+%     figure;
+%     scatter(coor_x(:),coor_y(:))
+%     hold on
+%     scatter(X_dash,Y_dash)
     
     % Save the position and velocity of each agent at current n.
     pos_begin=[X(n,:)' Y(n,:)']; % Forms a N X 2 array
@@ -107,14 +148,16 @@ for n=1:Tfinal/Tstep-1
     % Calculates the position and velocity in the next time step (Euler's method).
     X(n+1,:)=X(n,:)+Vx(n,:)*Tstep;
     Y(n+1,:)=Y(n,:)+Vy(n,:)*Tstep;
-    pos_target(:,1)=pos_target(:,1)+0.45*Tstep; % Paused movement temporarily to view rotation
-    pos_target(:,2)=pos_target(:,2)+0.45*Tstep; % Paused movement temporarily to view rotation
+    pos_target(:,1)=pos_target(:,1)+0.45*Tstep;
+    pos_target(:,2)=pos_target(:,2)+0.45*Tstep;
     Vx(n+1,:)=Vx(n,:) + ux*ScaleU*Tstep;
     Vy(n+1,:)=Vy(n,:) + uy*ScaleU*Tstep;
     
 end
+toc
 
-t=(1:length(X))'*Tstep; var=0; % Just for convenience such that the plot commands below, which was for continous time case, are still valid.
+t=(1:length(X))'*Tstep; 
+var=0; % Just for convenience such that the plot commands below, which was for continous time case, are still valid.
 
 
 
@@ -123,7 +166,7 @@ t=(1:length(X))'*Tstep; var=0; % Just for convenience such that the plot command
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Plot the swarm trajectories
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+tic
 % Plot the functions:
 kk=40;
 xx=-5:(kk+1)/100:kk;   % For our function the range of values we are considering
@@ -221,7 +264,7 @@ figure(3) % Plot trajectory of path taken by agents to reach goal from beginning
     plot(X0,Y0,'bs')
     plot(X(temp1,:),Y(temp1,:),'ro','LineWidth',2);
     hold off;
-fprintf("End of plotting using %d seconds as simulation time.\n",Tfinal)
+fprintf("\nEnd of plotting using %d seconds as simulation time.\n",Tfinal)
 toc
 
 % Next, produce a movie:
