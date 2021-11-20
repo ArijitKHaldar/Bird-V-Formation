@@ -15,7 +15,7 @@ b=10;  % Define parameters for repel function ('kr')
 c=1;  % Define parameter of rulpulsion region ('rs^2')
 
 % Define simulation parameters:
-Tfinal=40; % Units are seconds (keep it even)
+Tfinal=80; % Units are seconds (keep it even)
 Tstep=0.01;
 Tspan=0:Tstep:Tfinal+Tstep;
 
@@ -54,7 +54,7 @@ pos_target=trianglecoordinates(N,angle);
 
 theta=deg2rad(-47); % For rotation of orientation
 R = [cos(theta) -sin(theta); 
-     sin(theta) cos(theta)];
+        sin(theta) cos(theta)];
 pos_target = (R*(pos_target'-pos_target(1,:)')+pos_target(1,:)')';
 
 
@@ -102,9 +102,10 @@ for n=1:Tfinal/Tstep-1
     cirCenter(n,:) = loc_spline;
     
     [X_dash,Y_dash] = findCirclePoints(P);
-    X_dash = X_dash';
-    Y_dash = Y_dash';
-    Circle_Co{:,n} = [X_dash;Y_dash];
+    %X_dash = X_dash';
+    %Y_dash = Y_dash';
+    %Circle_Co{:,n} = [X_dash;Y_dash];
+    Circle_Co = [X_dash,Y_dash];
     
     % plot the circular region over sensing info
 %     figure;
@@ -148,8 +149,13 @@ for n=1:Tfinal/Tstep-1
     % Calculates the position and velocity in the next time step (Euler's method).
     X(n+1,:)=X(n,:)+Vx(n,:)*Tstep;
     Y(n+1,:)=Y(n,:)+Vy(n,:)*Tstep;
-    pos_target(:,1)=pos_target(:,1)+0.45*Tstep;
-    pos_target(:,2)=pos_target(:,2)+0.45*Tstep;
+    if sqrt(power(xgoal(1,1)-pos_target(1,1),2)+power(xgoal(2,1)-pos_target(1,2),2)) < 1
+        pos_target(:,1)=pos_target(:,1)+0*Tstep;
+        pos_target(:,2)=pos_target(:,2)+0*Tstep;
+    else
+        pos_target(:,1)=pos_target(:,1)+1*Tstep;
+        pos_target(:,2)=pos_target(:,2)+1*Tstep;
+    end
     Vx(n+1,:)=Vx(n,:) + ux*ScaleU*Tstep;
     Vy(n+1,:)=Vy(n,:) + uy*ScaleU*Tstep;
     
@@ -290,6 +296,9 @@ if flagg==1
     
     [temp1d,temp2]=size(Xd);
     
+    ddtt=sprintf('../Outputs/test_%s',datetime('now','TimeZone','Asia/Kolkata','Format','d-MMM-y_HH:mm'));
+    videosave=VideoWriter(ddtt,'Uncompressed AVI');
+    open(videosave);
     for j=1:temp1d
         clf;
         contour(xx,yy,zz+zzz,40)
@@ -302,9 +311,10 @@ if flagg==1
         xlabel('x')
         ylabel('y')
         title('Swarm agent position trajectories')
-        M(:,j) = getframe;
-        
+        M(:,j) = getframe(gcf);
+        writeVideo(videosave,M(:,j));
     end
+    close(videosave);
     
     hold on % Next, add as the last frame the set of trajectories and end/start points
     plot(X,Y,'k:');
@@ -320,4 +330,14 @@ if flagg==1
     %movie(M)
     fprintf("End of animated plot\n")
     toc
+    
+    % convert AVI to MP4
+    pathVideoMP4 = regexprep(ddtt+".avi",'\.avi','.mp4'); % generate mp4 filename
+    if isunix % for linux
+        currentPath = "~/Documents/Dissertation/Swarm/";
+        [~,~] = system(sprintf('ffmpeg -i %s -y -an -c:v libx264 -crf 0 -preset slow %s',currentPath+ddtt+".avi",currentPath+pathVideoMP4)); % for this to work, you should have installed ffmpeg and have it available on PATH
+    elseif ispc % for windows
+        [~,~] = system(sprintf('ffmpeg.exe -i %s -y -an -c:v libx264 -crf 0 -preset slow %s',ddtt+".avi",pathVideoMP4)); % for this to work, you should have installed ffmpeg and have it available on PATH
+    end
+    
 end
