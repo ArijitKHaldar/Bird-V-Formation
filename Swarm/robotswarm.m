@@ -274,8 +274,8 @@ fprintf("\nEnd of plotting using %d seconds as simulation time.\n",Tfinal)
 toc
 
 % Next, produce a movie:
-%flagg=1;  % Set to 1 if want to see a movie
-flagg=0;
+flagg=1;  % Set to 1 if want to see a movie
+%flagg=0;
 Xd=[];Yd=[];
 if flagg==1
     tic
@@ -296,7 +296,16 @@ if flagg==1
     
     [temp1d,temp2]=size(Xd);
     
-    ddtt=sprintf('../Outputs/test_%s',datetime('now','TimeZone','Asia/Kolkata','Format','d-MMM-y_HH:mm'));
+    cd ..
+    [success,message,messageid] = mkdir(pwd,'Outputs');
+    cd Outputs
+    if ispc
+        ddtt=sprintf('%s\\test_%s.avi',pwd,datetime('now','TimeZone','Asia/Kolkata','Format','d-MMM-y_HH.mm'));
+        cd ..\Swarm
+    else
+        ddtt=sprintf('%s/test_%s.avi',pwd,datetime('now','TimeZone','Asia/Kolkata','Format','d-MMM-y_HH.mm'));
+        cd ../Swarm
+    end
     videosave=VideoWriter(ddtt,'Uncompressed AVI');
     open(videosave);
     for j=1:temp1d
@@ -332,12 +341,14 @@ if flagg==1
     toc
     
     % convert AVI to MP4
-    pathVideoMP4 = regexprep(ddtt+".avi",'\.avi','.mp4'); % generate mp4 filename
+    fprintf("\nJust wait a few moments...converting to mp4\n\n")
+    pathVideoMP4 = regexprep(ddtt,'\.avi','.mp4'); % generate mp4 filename
     if isunix % for linux
-        currentPath = "~/Documents/Dissertation/Swarm/";
-        [~,~] = system(sprintf('ffmpeg -i %s -y -an -c:v libx264 -crf 0 -preset slow %s',currentPath+ddtt+".avi",currentPath+pathVideoMP4)); % for this to work, you should have installed ffmpeg and have it available on PATH
+        [~,~] = system(sprintf('ffmpeg -i %s -y -an -c:v libx264 -crf 0 -preset slow %s',ddtt,pathVideoMP4)); % for this to work, you should have installed ffmpeg and have it available on PATH
     elseif ispc % for windows
-        [~,~] = system(sprintf('ffmpeg.exe -i %s -y -an -c:v libx264 -crf 0 -preset slow %s',ddtt+".avi",pathVideoMP4)); % for this to work, you should have installed ffmpeg and have it available on PATH
+        [~,~] = system(sprintf('ffmpeg.exe -i %s -y -an -c:v libx264 -crf 0 -preset slow %s',ddtt,pathVideoMP4)); % for this to work, you should have installed ffmpeg and have it available on PATH
+    elseif ismac % for mac
+        [~,~] = system(sprintf('ffmpeg -i %s -y -an -c:v libx264 -crf 0 -preset slow %s',ddtt,pathVideoMP4)); %  for this to work, you should have installed ffmpeg and have it available on PATH
     end
-    
+    fprintf("End of Simulation\n")
 end
