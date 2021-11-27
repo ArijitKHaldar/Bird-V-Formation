@@ -14,6 +14,6 @@ MATLAB R2018a on Arch Linux both on 64-bit architecture.
 - The directory structure must be maintained for the code to work properly
     - If using `git clone`, nothing has to be done separately.
     - If manually downloading as `.zip` and extracting, make sure that you have the codes in a folder named `Swarm`.
-      A folder named `Output` will be created in the directory where `Swarm` is placed.
-      If `Output` folder already there, the resulting videos will be saved inside it, and nothing will be over-written.
+      A folder named `Outputs` will be created in the directory where `Swarm` is placed.
+      If `Outputs` folder already there, the resulting videos will be saved inside it, and nothing will be over-written.
 - Install `ffmpeg` and add it to path in any OS that you use before running this code, else encoding into `.mp4` will fail.
