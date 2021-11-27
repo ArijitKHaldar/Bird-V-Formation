@@ -20,7 +20,8 @@ Tstep=0.01;
 Tspan=0:Tstep:Tfinal+Tstep;
 
 % Define initial conditions:
-ICsize1=2; ICsize2=2;
+ICsize1=2; 
+ICsize2=2;
 X0=ICsize1*rand(1,N)+3;   % Pick random values for initial positions in X and Y dimensions
 Y0=ICsize1*rand(1,N)+3;
 Vx0=ICsize2*rand(1,N);    % Pick random values for initial velocities in X and Y dimensions
@@ -31,7 +32,8 @@ X(1,1:N)=X0; Y(1,1:N)=Y0; % First dimension is time, second is N values of X (Y)
 Vx(1,1:N)=Vx0; Vy(1,1:N)=Vy0; 
 
 % Goal position of vehicle
-xgoal=[25; 25];
+xgoal=[25; 
+       25];
 w1=120; 		% Set weighting factors on the goal function and obstacle function
 w2=0.1;
 
@@ -60,7 +62,7 @@ pos_target = (R*(pos_target'-pos_target(1,:)')+pos_target(1,:)')';
 
 
 
-%% Sensing parameters
+% Sensing parameters
 k1_sense=2.5;	
 k2_sense=2.5;   
 kv_sense=0.35;   
@@ -149,12 +151,12 @@ for n=1:Tfinal/Tstep-1
     % Calculates the position and velocity in the next time step (Euler's method).
     X(n+1,:)=X(n,:)+Vx(n,:)*Tstep;
     Y(n+1,:)=Y(n,:)+Vy(n,:)*Tstep;
-    if sqrt(power(xgoal(1,1)-pos_target(1,1),2)+power(xgoal(2,1)-pos_target(1,2),2)) < 1
+    if sqrt(power(xgoal(1,1)-pos_target(1,1),2)+power(xgoal(2,1)-pos_target(1,2),2)) < 0.5
         pos_target(:,1)=pos_target(:,1)+0*Tstep;
         pos_target(:,2)=pos_target(:,2)+0*Tstep;
     else
-        pos_target(:,1)=pos_target(:,1)+1*Tstep;
-        pos_target(:,2)=pos_target(:,2)+1*Tstep;
+        pos_target(:,1)=pos_target(:,1)+(sqrt(power(xgoal(1,1)-pos_target(1,1),2)+power(xgoal(2,1)-pos_target(1,2),2))/sqrt(power(xgoal(1,1)-X0(1,1),2)+power(xgoal(2,1)-Y0(1,1),2)))*Tstep;
+        pos_target(:,2)=pos_target(:,2)+(sqrt(power(xgoal(1,1)-pos_target(1,1),2)+power(xgoal(2,1)-pos_target(1,2),2))/sqrt(power(xgoal(1,1)-X0(1,1),2)+power(xgoal(2,1)-Y0(1,1),2)))*Tstep;
     end
     Vx(n+1,:)=Vx(n,:) + ux*ScaleU*Tstep;
     Vy(n+1,:)=Vy(n,:) + uy*ScaleU*Tstep;
@@ -274,9 +276,10 @@ fprintf("\nEnd of plotting using %d seconds as simulation time.\n",Tfinal)
 toc
 
 % Next, produce a movie:
-flagg=1;  % Set to 1 if want to see a movie
-%flagg=0;
-Xd=[];Yd=[];
+%flagg=1;  % Set to 1 if want to see a movie
+flagg=0;
+Xd=[];
+Yd=[];
 if flagg==1
     tic
     fprintf("\nStarting animated plot...please wait...\n")
