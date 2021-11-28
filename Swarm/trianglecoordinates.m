@@ -1,6 +1,6 @@
 % Here I will try to return N coordinates of triangle as array for vertex
 % angle as parameter
-function ft=trianglecoordinates(num,angl)
+function ft=trianglecoordinates(num)
      arr=zeros(num,2);
      arr=[7,6.5;
             6,4;
