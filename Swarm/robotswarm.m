@@ -3,8 +3,8 @@ clear
 close all hidden
 clc
 
-N=input('Enter number of agents: ');	% The number of agents (individuals) in swarm
-flagg=input('Do you want to see animated plot? (yes -> 1 / NO -> 0): ');
+N=input('Enter number of agents[Please enter 5 for now] :');	% The number of agents (individuals) in swarm
+flagg=input('Do you want to see animated plot? (yes/NO -> 1/0)[Press ENTER for NO]: ');
 if isempty(flagg)
     flagg = 0;
 end
@@ -53,10 +53,6 @@ ScaleU=10; % This is used to change the magnitude of the control input ux and uy
 xrepel=zeros(1,N);
 yrepel=zeros(1,N);
 
-% Set coordinates of vertices of triangle for starting formation
-% Here I plan to add a function that returns Nx2 array for agent starting formation
-pos_targetOld=trianglecoordinates(N);
-
 % Sensing parameters
 k1_sense=2.5;	
 k2_sense=2.5;   
@@ -87,8 +83,6 @@ for n=1:Tfinal/Tstep-1
     coor_x = [X_virAgent(end-5,:);X_virAgent(end,:)];
     coor_y = [Y_virAgent(end-5,:);Y_virAgent(end,:)];
     
-
-    
     % fit in a circular region around the sensing coordinates
     %tic
     P = CircleFitByPratt([coor_x(:)';coor_y(:)']);
@@ -110,17 +104,41 @@ for n=1:Tfinal/Tstep-1
 %     hold on
 %     scatter(X_dash,Y_dash)
 
-    [xtemp,ytemp] = linecirc(((0-cirCenter(1,1))/(0-cirCenter(1,2))),0,cirCenter(1,1),cirCenter(1,2),sqrt(power(Circle_Co(1,1)-cirCenter(1,1),2)+power(Circle_Co(1,2)-cirCenter(1,2),2)));
+    [xtemp,ytemp] = linecirc(((0-cirCenter(1,2))/(0-cirCenter(1,1))),0,cirCenter(n,1),cirCenter(n,2),sqrt(power(Circle_Co(1,1)-cirCenter(n,1),2)+power(Circle_Co(1,2)-cirCenter(n,2),2)));
     if xtemp(1,1) > xtemp(1,2)
-        beginCoor = [xtemp(1,1),ytemp(1,1)];
+        minimum =1000;
+        for i=1:1:length(Circle_Co)
+            if(sqrt(power(Circle_Co(i,1)-xtemp(1,1),2)+power(Circle_Co(i,2)-xtemp(1,1),2)) < minimum)
+                minimum = sqrt(power(Circle_Co(i,1)-xtemp(1,1),2)+power(Circle_Co(i,2)-xtemp(1,1),2));
+                vertCoor(1,:) = [Circle_Co(i,1),Circle_Co(i,2)];
+            end
+        end
     else
-        beginCoor = [xtemp(1,2),ytemp(1,2)];
+        minimum =1000;
+        for i=1:1:length(Circle_Co)
+            if(sqrt(power(Circle_Co(i,1)-xtemp(1,2),2)+power(Circle_Co(i,2)-xtemp(1,2),2)) < minimum)
+                minimum = sqrt(power(Circle_Co(i,2)-xtemp(1,2),2)+power(Circle_Co(i,2)-xtemp(1,2),2));
+                vertCoor(1,:) = [Circle_Co(i,1),Circle_Co(i,2)];
+            end
+        end
     end
-    
-    theta=deg2rad(-47); % For rotation of orientation
-    R = [cos(theta) -sin(theta); 
-        sin(theta) cos(theta)];
-    pos_targetNew = (R*(pos_targetOld'-pos_targetOld(1,:)')+pos_targetOld(1,:)')';
+  
+    tmp = 1;
+    for i=1:1:length(Circle_Co)
+        s = sqrt(power((Circle_Co(i,1)-cirCenter(n,1)),2)+power((Circle_Co(i,2)-cirCenter(n,2)),2))*sqrt(3);
+        dist = sqrt(power((vertCoor(1,1)-Circle_Co(i,1)),2)+power((vertCoor(1,2)-Circle_Co(i,2)),2));
+        if(abs(dist-s) < 0.16)
+            vertCoor(tmp+1,:) = [Circle_Co(i,1),Circle_Co(i,2)];
+            tmp=tmp+1;
+        end
+    end
+   
+    % Set coordinates of vertices of triangle for starting formation
+    % Here I plan to add a function that returns Nx2 array for agent starting formation
+    tria_form=trianglecoordinates(N,vertCoor);
+    if (n==1)
+        pos_targetNew = tria_form;
+    end
     
     % Save the position and velocity of each agent at current n.
     pos_begin=[X(n,:)' Y(n,:)']; % Forms a N X 2 array
@@ -158,6 +176,21 @@ for n=1:Tfinal/Tstep-1
     % Calculates the position and velocity in the next time step (Euler's method).
     X(n+1,:)=X(n,:)+Vx(n,:)*Tstep;
     Y(n+1,:)=Y(n,:)+Vy(n,:)*Tstep;
+    
+%     theta=deg2rad(0); % I need to somehow find angle between position now and required position and put here
+%     R = [cos(theta) -sin(theta); 
+%         sin(theta) cos(theta)];
+%     pos_targetOld = zeros(N,2);
+%     while(rad2deg(theta) > 5.0 || rad2deg(theta) < -5.0)
+%         pos_targetOld = (R*(pos_targetNew'-pos_targetNew(1,:)')+pos_targetNew(1,:)')';
+%         pos_targetOld(:,1)=pos_targetOld(:,1)+0.4*Tstep;
+%         pos_targetOld(:,2)=pos_targetOld(:,2)+0.4*Tstep;
+%         theta = theta - deg2rad(2); % Sense the present angle and update theta to know how much more rotation needed
+%         
+%         pos_targetNew = pos_targetOld;
+%         
+%     end
+    
     if sqrt(power(xgoal(1,1)-pos_targetNew(1,1),2)+power(xgoal(2,1)-pos_targetNew(1,2),2)) < 0.5
         pos_targetNew(:,1)=pos_targetNew(:,1)+0*Tstep;
         pos_targetNew(:,2)=pos_targetNew(:,2)+0*Tstep;
