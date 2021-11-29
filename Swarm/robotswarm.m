@@ -3,10 +3,15 @@ clear
 close all hidden
 clc
 
+N=input('Enter number of agents[Please enter 5 for now] :');	% The number of agents (individuals) in swarm
+flagg=input('Do you want to see animated plot? (yes/NO -> 1/0)[Press ENTER for NO]: ');
+if isempty(flagg)
+    flagg = 0;
+end
+clc
 tic % Starting timer to start calculating elapsed time
-fprintf("Start simulation\n")
+fprintf("\nStart simulation\n")
 
-N=5;	% The number of agents (individuals) in swarm (Try user input later)
 k1=1;	% Chosen to get a stability property ('kp')
 k2=k1;  % Choose this k2>=0. Velocities converge to mean faster with larger k2. 
 kv=0.1;   % Velocity damping ('k')  (kv=10 for quadratic case?)
@@ -15,12 +20,13 @@ b=10;  % Define parameters for repel function ('kr')
 c=1;  % Define parameter of rulpulsion region ('rs^2')
 
 % Define simulation parameters:
-Tfinal=40; % Units are seconds (keep it even)
+Tfinal=80; % Units are seconds (keep it even)
 Tstep=0.01;
 Tspan=0:Tstep:Tfinal+Tstep;
 
 % Define initial conditions:
-ICsize1=2; ICsize2=2;
+ICsize1=2; 
+ICsize2=2;
 X0=ICsize1*rand(1,N)+3;   % Pick random values for initial positions in X and Y dimensions
 Y0=ICsize1*rand(1,N)+3;
 Vx0=ICsize2*rand(1,N);    % Pick random values for initial velocities in X and Y dimensions
@@ -31,7 +37,8 @@ X(1,1:N)=X0; Y(1,1:N)=Y0; % First dimension is time, second is N values of X (Y)
 Vx(1,1:N)=Vx0; Vy(1,1:N)=Vy0; 
 
 % Goal position of vehicle
-xgoal=[25; 25];
+xgoal=[25; 
+       25];
 w1=120; 		% Set weighting factors on the goal function and obstacle function
 w2=0.1;
 
@@ -46,21 +53,7 @@ ScaleU=10; % This is used to change the magnitude of the control input ux and uy
 xrepel=zeros(1,N);
 yrepel=zeros(1,N);
 
-
-% Set coordinates of vertices of triangle for starting formation
-% Here I plan to add a function that returns Nx2 array for agent starting formation
-angle=60; % Defined vertex angle for triangle (Try user input later)
-pos_target=trianglecoordinates(N,angle);
-
-theta=deg2rad(-47); % For rotation of orientation
-R = [cos(theta) -sin(theta); 
-     sin(theta) cos(theta)];
-pos_target = (R*(pos_target'-pos_target(1,:)')+pos_target(1,:)')';
-
-
-
-
-%% Sensing parameters
+% Sensing parameters
 k1_sense=2.5;	
 k2_sense=2.5;   
 kv_sense=0.35;   
@@ -90,8 +83,6 @@ for n=1:Tfinal/Tstep-1
     coor_x = [X_virAgent(end-5,:);X_virAgent(end,:)];
     coor_y = [Y_virAgent(end-5,:);Y_virAgent(end,:)];
     
-
-    
     % fit in a circular region around the sensing coordinates
     %tic
     P = CircleFitByPratt([coor_x(:)';coor_y(:)']);
@@ -99,25 +90,62 @@ for n=1:Tfinal/Tstep-1
     %toc
     
     loc_spline = [P(1,1) P(1,2)];
-    cirCenter(n,:) = loc_spline;
+    cirCenter(n,:) = loc_spline; % This has the coordinates of center of circle after fitting is done
     
     [X_dash,Y_dash] = findCirclePoints(P);
-    X_dash = X_dash';
-    Y_dash = Y_dash';
-    Circle_Co{:,n} = [X_dash;Y_dash];
+    %X_dash = X_dash';
+    %Y_dash = Y_dash';
+    %Circle_Co{:,n} = [X_dash;Y_dash];
+    Circle_Co = [X_dash,Y_dash]; % This has 50 coordinates on the circumference of the circle
     
     % plot the circular region over sensing info
 %     figure;
 %     scatter(coor_x(:),coor_y(:))
 %     hold on
 %     scatter(X_dash,Y_dash)
+
+    [xtemp,ytemp] = linecirc(((0-cirCenter(1,2))/(0-cirCenter(1,1))),0,cirCenter(n,1),cirCenter(n,2),sqrt(power(Circle_Co(1,1)-cirCenter(n,1),2)+power(Circle_Co(1,2)-cirCenter(n,2),2)));
+    if xtemp(1,1) > xtemp(1,2)
+        minimum =1000;
+        for i=1:1:length(Circle_Co)
+            if(sqrt(power(Circle_Co(i,1)-xtemp(1,1),2)+power(Circle_Co(i,2)-xtemp(1,1),2)) < minimum)
+                minimum = sqrt(power(Circle_Co(i,1)-xtemp(1,1),2)+power(Circle_Co(i,2)-xtemp(1,1),2));
+                vertCoor(1,:) = [Circle_Co(i,1),Circle_Co(i,2)];
+            end
+        end
+    else
+        minimum =1000;
+        for i=1:1:length(Circle_Co)
+            if(sqrt(power(Circle_Co(i,1)-xtemp(1,2),2)+power(Circle_Co(i,2)-xtemp(1,2),2)) < minimum)
+                minimum = sqrt(power(Circle_Co(i,2)-xtemp(1,2),2)+power(Circle_Co(i,2)-xtemp(1,2),2));
+                vertCoor(1,:) = [Circle_Co(i,1),Circle_Co(i,2)];
+            end
+        end
+    end
+  
+    tmp = 1;
+    for i=1:1:length(Circle_Co)
+        s = sqrt(power((Circle_Co(i,1)-cirCenter(n,1)),2)+power((Circle_Co(i,2)-cirCenter(n,2)),2))*sqrt(3);
+        dist = sqrt(power((vertCoor(1,1)-Circle_Co(i,1)),2)+power((vertCoor(1,2)-Circle_Co(i,2)),2));
+        if(abs(dist-s) < 0.16)
+            vertCoor(tmp+1,:) = [Circle_Co(i,1),Circle_Co(i,2)];
+            tmp=tmp+1;
+        end
+    end
+   
+    % Set coordinates of vertices of triangle for starting formation
+    % Here I plan to add a function that returns Nx2 array for agent starting formation
+    tria_form=trianglecoordinates(N,vertCoor);
+    if (n==1)
+        pos_targetNew = tria_form;
+    end
     
     % Save the position and velocity of each agent at current n.
     pos_begin=[X(n,:)' Y(n,:)']; % Forms a N X 2 array
     vbar=mean([Vx(n,:)' Vy(n,:)']);
     
     % ErrorMatrix: 4xN, each column represents the error terms ([ep_x;ep_y;ev_x;ev_y]) of an agent.
-    ErrorMatrix=[X(n,:)'-pos_target(:,1) Y(n,:)'-pos_target(:,2) Vx(n,:)'-vbar(:,1) Vy(n,:)'-vbar(:,2)]'; % Not used anywhere !!
+    ErrorMatrix=[X(n,:)'-pos_targetNew(:,1) Y(n,:)'-pos_targetNew(:,2) Vx(n,:)'-vbar(:,1) Vy(n,:)'-vbar(:,2)]'; % Not used anywhere !!
 
     EP_hat=[X(n,:); Y(n,:)]; 
     % 2xN, [EP_hat(1,i); EP_hat(2,i)] is the position error of agent i with sensing error.
@@ -142,14 +170,34 @@ for n=1:Tfinal/Tstep-1
     end
     
     % Calculate the control input on two dimension x,y. Each u (i.e., ux, uy) is a 1xN vector.
-    ux=-k1*(X(n,:)-pos_target(:,1)') - k2*(Vx(n,:)-mean(Vx(n,:))) - kv*Vx(n,:) + xrepel - kf*(A(:,1)'); %Note A
-    uy=-k1*(Y(n,:)-pos_target(:,2)') - k2*(Vy(n,:)-mean(Vy(n,:))) - kv*Vy(n,:) + yrepel - kf*(A(:,2)');
+    ux=-k1*(X(n,:)-pos_targetNew(:,1)') - k2*(Vx(n,:)-mean(Vx(n,:))) - kv*Vx(n,:) + xrepel - kf*(A(:,1)'); %Note A
+    uy=-k1*(Y(n,:)-pos_targetNew(:,2)') - k2*(Vy(n,:)-mean(Vy(n,:))) - kv*Vy(n,:) + yrepel - kf*(A(:,2)');
     
     % Calculates the position and velocity in the next time step (Euler's method).
     X(n+1,:)=X(n,:)+Vx(n,:)*Tstep;
     Y(n+1,:)=Y(n,:)+Vy(n,:)*Tstep;
-    pos_target(:,1)=pos_target(:,1)+0.45*Tstep;
-    pos_target(:,2)=pos_target(:,2)+0.45*Tstep;
+    
+%     theta=deg2rad(0); % I need to somehow find angle between position now and required position and put here
+%     R = [cos(theta) -sin(theta); 
+%         sin(theta) cos(theta)];
+%     pos_targetOld = zeros(N,2);
+%     while(rad2deg(theta) > 5.0 || rad2deg(theta) < -5.0)
+%         pos_targetOld = (R*(pos_targetNew'-pos_targetNew(1,:)')+pos_targetNew(1,:)')';
+%         pos_targetOld(:,1)=pos_targetOld(:,1)+0.4*Tstep;
+%         pos_targetOld(:,2)=pos_targetOld(:,2)+0.4*Tstep;
+%         theta = theta - deg2rad(2); % Sense the present angle and update theta to know how much more rotation needed
+%         
+%         pos_targetNew = pos_targetOld;
+%         
+%     end
+    
+    if sqrt(power(xgoal(1,1)-pos_targetNew(1,1),2)+power(xgoal(2,1)-pos_targetNew(1,2),2)) < 0.5
+        pos_targetNew(:,1)=pos_targetNew(:,1)+0*Tstep;
+        pos_targetNew(:,2)=pos_targetNew(:,2)+0*Tstep;
+    else
+        pos_targetNew(:,1)=pos_targetNew(:,1)+(sqrt(power(xgoal(1,1)-pos_targetNew(1,1),2)+power(xgoal(2,1)-pos_targetNew(1,2),2))/sqrt(power(xgoal(1,1)-X0(1,1),2)+power(xgoal(2,1)-Y0(1,1),2)))*Tstep;
+        pos_targetNew(:,2)=pos_targetNew(:,2)+(sqrt(power(xgoal(1,1)-pos_targetNew(1,1),2)+power(xgoal(2,1)-pos_targetNew(1,2),2))/sqrt(power(xgoal(1,1)-X0(1,1),2)+power(xgoal(2,1)-Y0(1,1),2)))*Tstep;
+    end
     Vx(n+1,:)=Vx(n,:) + ux*ScaleU*Tstep;
     Vy(n+1,:)=Vy(n,:) + uy*ScaleU*Tstep;
     
@@ -268,9 +316,9 @@ fprintf("\nEnd of plotting using %d seconds as simulation time.\n",Tfinal)
 toc
 
 % Next, produce a movie:
-%flagg=1;  % Set to 1 if want to see a movie
-flagg=0;
-Xd=[];Yd=[];
+% Set flagg to 1 if want to see a movie
+Xd=[];
+Yd=[];
 if flagg==1
     tic
     fprintf("\nStarting animated plot...please wait...\n")
@@ -290,6 +338,18 @@ if flagg==1
     
     [temp1d,temp2]=size(Xd);
     
+    cd ..
+    [success,message,messageid] = mkdir(pwd,'Outputs');
+    cd Outputs
+    if ispc
+        ddtt=sprintf('%s\\test_%s.avi',pwd,datetime('now','TimeZone','Asia/Kolkata','Format','d-MMM-y_HH.mm'));
+        cd ..\Swarm
+    else
+        ddtt=sprintf('%s/test_%s.avi',pwd,datetime('now','TimeZone','Asia/Kolkata','Format','d-MMM-y_HH.mm'));
+        cd ../Swarm
+    end
+    videosave=VideoWriter(ddtt,'Uncompressed AVI');
+    open(videosave);
     for j=1:temp1d
         clf;
         contour(xx,yy,zz+zzz,40)
@@ -302,9 +362,10 @@ if flagg==1
         xlabel('x')
         ylabel('y')
         title('Swarm agent position trajectories')
-        M(:,j) = getframe;
-        
+        M(:,j) = getframe(gcf);
+        writeVideo(videosave,M(:,j));
     end
+    close(videosave);
     
     hold on % Next, add as the last frame the set of trajectories and end/start points
     plot(X,Y,'k:');
@@ -320,4 +381,16 @@ if flagg==1
     %movie(M)
     fprintf("End of animated plot\n")
     toc
+    
+    % convert AVI to MP4
+    fprintf("\nJust wait a few moments...converting to mp4\n\n")
+    pathVideoMP4 = regexprep(ddtt,'\.avi','.mp4'); % generate mp4 filename
+    if isunix % for linux
+        [~,~] = system(sprintf('ffmpeg -i %s -y -an -c:v libx264 -crf 0 -preset slow %s',ddtt,pathVideoMP4)); % for this to work, you should have installed ffmpeg and have it available on PATH
+    elseif ispc % for windows
+        [~,~] = system(sprintf('ffmpeg.exe -i %s -y -an -c:v libx264 -crf 0 -preset slow %s',ddtt,pathVideoMP4)); % for this to work, you should have installed ffmpeg and have it available on PATH
+    elseif ismac % for mac
+        [~,~] = system(sprintf('ffmpeg -i %s -y -an -c:v libx264 -crf 0 -preset slow %s',ddtt,pathVideoMP4)); %  for this to work, you should have installed ffmpeg and have it available on PATH
+    end
+    fprintf("End of Simulation\n")
 end
