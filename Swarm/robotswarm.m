@@ -106,20 +106,10 @@ for n=1:Tfinal/Tstep-1
 %     hold on
 %     scatter(X_dash,Y_dash)
 
-    vertCoor(1,:) = trianglePeak(n,P,cirCenter,Circle_Co);
-  
-    tmp = 1;
-    for i=1:1:length(Circle_Co)
-        s = sqrt(power((Circle_Co(i,1)-cirCenter(n,1)),2)+power((Circle_Co(i,2)-cirCenter(n,2)),2))*sqrt(3); % r*sqrt(3)
-        dist = sqrt(power((vertCoor(1,1)-Circle_Co(i,1)),2)+power((vertCoor(1,2)-Circle_Co(i,2)),2));
-        if(abs(dist-s) < 0.16)
-            vertCoor(tmp+1,:) = [Circle_Co(i,1),Circle_Co(i,2)];
-            tmp=tmp+1;
-        end
-    end
+    vertCoor = triangleVertices(n,P,cirCenter,Circle_Co);
    
     % Set coordinates of vertices of triangle for starting formation
-    % Here I plan to add a function that returns Nx2 array for agent starting formation
+    % This will contain not just the vertex coordinates, rather coordinates of all N agents where they need to be placed next
     tria_form=triangleAgents(N,vertCoor);
     if (n==1)
         pos_targetNew = tria_form;
