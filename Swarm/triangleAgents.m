@@ -8,3 +8,4 @@ function ft=trianglecoordinates(num,triangle_vertex)
            triangle_vertex(2,1),triangle_vertex(2,2);
            triangle_vertex(3,1),triangle_vertex(3,2)];
      ft=arr;
+end

@@ -1,0 +1,2 @@
+function vertices = triangleVertices()
+end
