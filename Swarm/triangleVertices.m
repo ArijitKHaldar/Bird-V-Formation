@@ -6,7 +6,7 @@ function vertices = triangleVertices(n,P,cirCenter,Circle_Co)
     
     for i=1:1:length(Circle_Co)
     
-        s = sqrt(power((Circle_Co(i,1)-cirCenter(n,1)),2)+power((Circle_Co(i,2)-cirCenter(n,2)),2))*sqrt(3); % r*sqrt(3)
+        s = (P(1,3)-3)*sqrt(3); % r*sqrt(3)
         dist = sqrt(power((vertCoor(1,1)-Circle_Co(i,1)),2)+power((vertCoor(1,2)-Circle_Co(i,2)),2));
         
         if(abs(dist-s) < 0.16)
