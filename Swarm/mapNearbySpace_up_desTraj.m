@@ -25,7 +25,7 @@ function [X,Y,Vx,Vy]=mapNearbySpace_up_desTraj(k1,k2,kv,kf,b,c,X_1,Y_1,Vx_1,Vy_1
         xbar=mean([X(end,:)' Y(end,:)']);       % 2x1 vector of means in X and Y dimensions
         vbar=mean([Vx(end,:)' Vy(end,:)']);      % and for velocity also
 
-        ErrorMatrix=[X(end,:)-xbar(1); Y(end,:)-xbar(2); Vx(end,:)-vbar(1); Vy(end,:)-vbar(2)];
+        %ErrorMatrix=[X(end,:)-xbar(1); Y(end,:)-xbar(2); Vx(end,:)-vbar(1); Vy(end,:)-vbar(2)];
 
         EP_hat=[X(end,:); Y(end,:)];
 
