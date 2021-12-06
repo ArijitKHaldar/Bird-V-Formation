@@ -8,7 +8,7 @@
 %
 %    B                      C
 %
-function ft=triangleAgents(num,triangle_vertex)
+function ft=triangleAgents(num,triangle_vertex,minDist)
      
      arr=zeros(num,2); % Preallocating
      
@@ -20,10 +20,11 @@ function ft=triangleAgents(num,triangle_vertex)
          dist = sqrt(power((arr(1,1)-arr(2,1)),2)+power((arr(1,2)-arr(2,2)),2)); % Distance between points AB = AC
          numPoints = floor((num-2)/2); % Returns total number of agents that has to be fit between A and B
          subDist = dist/(numPoints+1); % Distance between B to P2L
+         if subDist < minDist
+                error('Not enough space to initialise %d agents',num);
+         end
          % Now, applying the formula (P will have order of numPoints,2)
          % P = (m_1*x_2+m_2*x_1)/(m_1+m_2) . P_L will contain coordinates of agents for left arm of triangle, P_R will contain coordinate of right arm
-         %P_L = [1.3 4.7];
-         %P_R = [5   1.76];
          
          for i = 1:numPoints
              m_1 = i*subDist;
@@ -34,13 +35,13 @@ function ft=triangleAgents(num,triangle_vertex)
              P_R(i,2) = (m_1*arr(3,2)+m_2*arr(1,2))/(m_1+m_2);
          end
          
-         count = length(P_L(:,1));
+         count = size(P_L,1); % I need count of number of rows, so took only 1 column
          for i = 4:num
             if count
                arr(i,:) = P_L(i-3,:); % First fill left arm
                count = count-1;
             else
-               arr(i,:) = P_R(i-3-length(P_L(:,1)),:); % Then fill right arm
+               arr(i,:) = P_R(i-3-size(P_L,1),:); % Then fill right arm
             end
          end
          
