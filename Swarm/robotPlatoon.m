@@ -99,82 +99,61 @@ for n=1:Tfinal/Tstep-1
     %Y_dash = Y_dash';
     %Circle_Co{:,n} = [X_dash;Y_dash];
     Circle_Co = [X_dash,Y_dash]; % This has 50 coordinates on the circumference of the circle
-    
-    % plot the circular region over sensing info
-%     figure;
-%     scatter(coor_x(:),coor_y(:))
-%     hold on
-%     scatter(X_dash,Y_dash)
 
     vertCoor = triangleVertices(n,P,cirCenter,Circle_Co);
    
     % Set coordinates of vertices of triangle for starting formation
     % This will contain not just the vertex coordinates, rather coordinates of all N agents where they need to be placed next
-    tria_form=triangleAgents(N,vertCoor);
-    if (n==1)
-        pos_targetNew = tria_form;
-    end
+    pos_target=triangleAgents(N,vertCoor);
     
-    % Save the position and velocity of each agent at current n.
-    pos_begin=[X(n,:)' Y(n,:)']; % Forms a N X 2 array
-    vbar=mean([Vx(n,:)' Vy(n,:)']);
-    
-    % ErrorMatrix: 4xN, each column represents the error terms ([ep_x;ep_y;ev_x;ev_y]) of an agent.
-    ErrorMatrix=[X(n,:)'-pos_targetNew(:,1) Y(n,:)'-pos_targetNew(:,2) Vx(n,:)'-vbar(:,1) Vy(n,:)'-vbar(:,2)]'; % Not used anywhere !!
+    for trial=1:100
+        % Save the position and velocity of each agent at current n.
+        %pos_begin=[X(n,:)' Y(n,:)']; % Forms a N X 2 array   % Never used this
+        vbar=mean([Vx(n,:)' Vy(n,:)']);
 
-    EP_hat=[X(n,:); Y(n,:)]; 
-    % 2xN, [EP_hat(1,i); EP_hat(2,i)] is the position error of agent i with sensing error.
-    % Note above that in 2d case, only the first two rows of 'dp' (which is 3xN) are used.
-    
-    % The 'for' loop below caculates the effect of the repel term on each agent (in 3 dimensions).
-    for i=1:N
-        Ediff=EP_hat(:,i)*ones(1,N)-EP_hat; % 2xN matrix. Column j (1<=j<=N) contains the error position difference of agent i and agent j in [x;y] direction, respectively.
-        dist=sqrt(sum(Ediff.*Ediff)); % 1xN vector. The jth component is the norm of the error difference of agent i and j. It's equal to the distance from agent i to agent j; or .
-        xrepel(i)=sum(b*exp(-dist.^2/c).*(X(n,i)-X(n,:)));
-        yrepel(i)=sum(b*exp(-dist.^2/c).*(Y(n,i)-Y(n,:)));
+        % ErrorMatrix: 4xN, each column represents the error terms ([ep_x;ep_y;ev_x;ev_y]) of an agent.
+        %ErrorMatrix=[X(n,:)'-pos_target(:,1) Y(n,:)'-pos_target(:,2) Vx(n,:)'-vbar(:,1) Vy(n,:)'-vbar(:,2)]'; % Not used anywhere !!
+
+        EP_hat=[X(n,:); Y(n,:)]; 
+        % 2xN, [EP_hat(1,i); EP_hat(2,i)] is the position error of agent i with sensing error.
+        % Note above that in 2d case, only the first two rows of 'dp' (which is 3xN) are used.
+
+        % The 'for' loop below caculates the effect of the repel term on each agent (in 3 dimensions).
+        for i=1:N
+            Ediff=EP_hat(:,i)*ones(1,N)-EP_hat; % 2xN matrix. Column j (1<=j<=N) contains the error position difference of agent i and agent j in [x;y] direction, respectively.
+            dist=sqrt(sum(Ediff.*Ediff)); % 1xN vector. The jth component is the norm of the error difference of agent i and j. It's equal to the distance from agent i to agent j; or .
+            xrepel(i)=sum(b*exp(-dist.^2/c).*(X(n,i)-X(n,:)));
+            yrepel(i)=sum(b*exp(-dist.^2/c).*(Y(n,i)-Y(n,:)));
+        end
+        % The 'for' loop below calculates the discrete gradient for each agent at current position.
+        A=zeros(N,2);
+        for i=1:N
+            NowJ=goalfunction0([X(n,i);Y(n,i)],xgoal,w2) + obstaclefunction([X(n,i);Y(n,i)],w1);
+            partial_x=Vx(n,i)*Tstep;
+            partial_y=Vy(n,i)*Tstep;
+            partialJx=goalfunction0([X(n,i)+partial_x;Y(n,i)],xgoal,w2) + obstaclefunction([X(n,i)+partial_x;Y(n,i)],w1) - NowJ;
+            partialJy=goalfunction0([X(n,i);Y(n,i)+partial_y],xgoal,w2) + obstaclefunction([X(n,i);Y(n,i)+partial_y],w1) - NowJ;        
+            A(i,:)=[partialJx/partial_x partialJy/partial_y];
+        end
+
+        % Calculate the control input on two dimension x,y. Each u (i.e., ux, uy) is a 1xN vector.
+        ux=-k1*(X(n,:)-pos_target(:,1)') - k2*(Vx(n,:)-mean(Vx(n,:))) - kv*Vx(n,:) + xrepel - kf*(A(:,1)'); %Note A
+        uy=-k1*(Y(n,:)-pos_target(:,2)') - k2*(Vy(n,:)-mean(Vy(n,:))) - kv*Vy(n,:) + yrepel - kf*(A(:,2)');
+
+        % Calculates the position and velocity in the next time step (Euler's method).
+        X(n+1,:)=X(n,:)+Vx(n,:)*Tstep;
+        Y(n+1,:)=Y(n,:)+Vy(n,:)*Tstep;
+
+    %     if sqrt(power(xgoal(1,1)-pos_target(1,1),2)+power(xgoal(2,1)-pos_target(1,2),2)) < 0.5
+    %         pos_target(:,1)=pos_target(:,1)+0*Tstep;
+    %         pos_target(:,2)=pos_target(:,2)+0*Tstep;
+    %     else
+    %         pos_target(:,1)=pos_target(:,1)+(sqrt(power(xgoal(1,1)-pos_target(1,1),2)+power(xgoal(2,1)-pos_target(1,2),2))/sqrt(power(xgoal(1,1)-X0(1,1),2)+power(xgoal(2,1)-Y0(1,1),2)))*Tstep;
+    %         pos_target(:,2)=pos_target(:,2)+(sqrt(power(xgoal(1,1)-pos_target(1,1),2)+power(xgoal(2,1)-pos_target(1,2),2))/sqrt(power(xgoal(1,1)-X0(1,1),2)+power(xgoal(2,1)-Y0(1,1),2)))*Tstep;
+    %     end
+        Vx(n+1,:)=Vx(n,:) + ux*ScaleU*Tstep;
+        Vy(n+1,:)=Vy(n,:) + uy*ScaleU*Tstep;
     end
-    % The 'for' loop below calculates the discrete gradient for each agent at current position.
-    A=zeros(N,2);
-    for i=1:N
-        NowJ=goalfunction0([X(n,i);Y(n,i)],xgoal,w2) + obstaclefunction([X(n,i);Y(n,i)],w1);
-        partial_x=Vx(n,i)*Tstep;
-        partial_y=Vy(n,i)*Tstep;
-        partialJx=goalfunction0([X(n,i)+partial_x;Y(n,i)],xgoal,w2) + obstaclefunction([X(n,i)+partial_x;Y(n,i)],w1) - NowJ;
-        partialJy=goalfunction0([X(n,i);Y(n,i)+partial_y],xgoal,w2) + obstaclefunction([X(n,i);Y(n,i)+partial_y],w1) - NowJ;        
-        A(i,:)=[partialJx/partial_x partialJy/partial_y];
-    end
-    
-    % Calculate the control input on two dimension x,y. Each u (i.e., ux, uy) is a 1xN vector.
-    ux=-k1*(X(n,:)-pos_targetNew(:,1)') - k2*(Vx(n,:)-mean(Vx(n,:))) - kv*Vx(n,:) + xrepel - kf*(A(:,1)'); %Note A
-    uy=-k1*(Y(n,:)-pos_targetNew(:,2)') - k2*(Vy(n,:)-mean(Vy(n,:))) - kv*Vy(n,:) + yrepel - kf*(A(:,2)');
-    
-    % Calculates the position and velocity in the next time step (Euler's method).
-    X(n+1,:)=X(n,:)+Vx(n,:)*Tstep;
-    Y(n+1,:)=Y(n,:)+Vy(n,:)*Tstep;
-    
-%     theta=deg2rad(0); % I need to somehow find angle between position now and required position and put here
-%     R = [cos(theta) -sin(theta); 
-%         sin(theta) cos(theta)];
-%     pos_targetOld = zeros(N,2);
-%     while(rad2deg(theta) > 5.0 || rad2deg(theta) < -5.0)
-%         pos_targetOld = (R*(pos_targetNew'-pos_targetNew(1,:)')+pos_targetNew(1,:)')';
-%         pos_targetOld(:,1)=pos_targetOld(:,1)+0.4*Tstep;
-%         pos_targetOld(:,2)=pos_targetOld(:,2)+0.4*Tstep;
-%         theta = theta - deg2rad(2); % Sense the present angle and update theta to know how much more rotation needed
-%         
-%         pos_targetNew = pos_targetOld;
-%         
-%     end
-    
-    if sqrt(power(xgoal(1,1)-pos_targetNew(1,1),2)+power(xgoal(2,1)-pos_targetNew(1,2),2)) < 0.5
-        pos_targetNew(:,1)=pos_targetNew(:,1)+0*Tstep;
-        pos_targetNew(:,2)=pos_targetNew(:,2)+0*Tstep;
-    else
-        pos_targetNew(:,1)=pos_targetNew(:,1)+(sqrt(power(xgoal(1,1)-pos_targetNew(1,1),2)+power(xgoal(2,1)-pos_targetNew(1,2),2))/sqrt(power(xgoal(1,1)-X0(1,1),2)+power(xgoal(2,1)-Y0(1,1),2)))*Tstep;
-        pos_targetNew(:,2)=pos_targetNew(:,2)+(sqrt(power(xgoal(1,1)-pos_targetNew(1,1),2)+power(xgoal(2,1)-pos_targetNew(1,2),2))/sqrt(power(xgoal(1,1)-X0(1,1),2)+power(xgoal(2,1)-Y0(1,1),2)))*Tstep;
-    end
-    Vx(n+1,:)=Vx(n,:) + ux*ScaleU*Tstep;
-    Vy(n+1,:)=Vy(n,:) + uy*ScaleU*Tstep;
     
 end
 toc
@@ -258,7 +237,7 @@ figure(2)
     hold on;
     plot(t(temparray,:),Vx(temparray,:),'linewidth',1)
     axis([0, floor(max(t)/10)*10*(t(end)>=10)+t(end)*(t(end)<10), floor(min(min(Vx))/10)*10, ceil(max(max(Vx))/10)*10]);
-    title('Swarm velocities, x dimension')
+    title('Deviation from mean velocity, x dimension')
     xlabel('Time, sec.')
     axis([0,Tfinal,-20,20]);
     hold off;
@@ -268,7 +247,7 @@ figure(2)
     hold on;
     plot(t(temparray,:),Vy(temparray,:),'linewidth',1)
     axis([0, floor(max(t)/10)*10*(t(end)>=10)+t(end)*(t(end)<10), floor(min(min(Vy))/10)*10, ceil(max(max(Vy))/10)*10]);
-    title('Swarm velocities, y dimension')
+    title('Deviation from mean velocity, y dimension')
     xlabel('Time, sec.')
     axis([0,Tfinal,-20,20]);
     hold off;
