@@ -1,5 +1,5 @@
-% For now, this will form symmetric V-formation with equal number of agents
-% on both arms of the V
+% If number of agents is even, distribution will be assymetric
+%
 %               A
 %
 %          P1L     P1R
@@ -26,13 +26,22 @@ function ft=triangleAgents(num,triangle_vertex,minDist)
          % Now, applying the formula (P will have order of numPoints,2)
          % P = (m_1*x_2+m_2*x_1)/(m_1+m_2) . P_L will contain coordinates of agents for left arm of triangle, P_R will contain coordinate of right arm
          
+         count = num-3;
          for i = 1:numPoints
              m_1 = i*subDist;
              m_2 = ((numPoints+1)-i)*subDist;
-             P_L(i,1) = (m_1*arr(2,1)+m_2*arr(1,1))/(m_1+m_2);
-             P_L(i,2) = (m_1*arr(2,2)+m_2*arr(1,2))/(m_1+m_2);
+             P_L(i,1) = (m_1*arr(2,1)+m_2*arr(1,1))/(m_1+m_2); % x-coordinate
+             P_L(i,2) = (m_1*arr(2,2)+m_2*arr(1,2))/(m_1+m_2); % y-coordinate
+             count = count-1;
+             if ~count
+                 break;
+             end
              P_R(i,1) = (m_1*arr(3,1)+m_2*arr(1,1))/(m_1+m_2);
              P_R(i,2) = (m_1*arr(3,2)+m_2*arr(1,2))/(m_1+m_2);
+             count = count-1;
+             if ~count
+                 break;
+             end
          end
          
          count = size(P_L,1); % I need count of number of rows, so took only 1 column
