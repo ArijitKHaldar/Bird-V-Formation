@@ -39,9 +39,6 @@ function ft=triangleAgents(num,triangle_vertex,minDist)
              P_R(i,1) = (m_1*arr(3,1)+m_2*arr(1,1))/(m_1+m_2);
              P_R(i,2) = (m_1*arr(3,2)+m_2*arr(1,2))/(m_1+m_2);
              count = count-1;
-             if ~count
-                 break;
-             end
          end
          
          count = size(P_L,1); % I need count of number of rows, so took only 1 column
