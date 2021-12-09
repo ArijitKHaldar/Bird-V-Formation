@@ -1,10 +1,16 @@
+% Main Code
+% (Information and data dictionary pending)
+%
+%
+
+
 %% Initialization
-clear
+clear all
 close all hidden
 clc
 
-N=input('Enter number of agents[Please enter odd number only] : ');	% The number of agents (individuals) in swarm
-flagg=input('Do you want to see animated plot? \n(for yes/NO enter 1/0) : ');
+N=input('Enter number of agents (minimum 3): ');	% The number of agents (individuals) in swarm
+flagg=input('Do you want to see animated plot? \n[For yes enter 1, for NO enter 0] : ');
 if isempty(flagg)
     flagg = 0;
 elseif flagg~=0 && flagg ~=1
@@ -106,44 +112,19 @@ for n=1:Tfinal/Tstep-1
     % This will contain not just the vertex coordinates, rather coordinates of all N agents where they need to be placed next
     pos_target=triangleAgents(N,vertCoor,c);
     
-%     % Save the position and velocity of each agent at current n.
-%     %pos_begin=[X(n,:)' Y(n,:)']; % Forms a N X 2 array   % Never used this
-%     vbar=mean([Vx(n,:)' Vy(n,:)']);
-% 
-%     % ErrorMatrix: 4xN, each column represents the error terms ([ep_x;ep_y;ev_x;ev_y]) of an agent.
-%     %ErrorMatrix=[X(n,:)'-pos_target(:,1) Y(n,:)'-pos_target(:,2) Vx(n,:)'-vbar(:,1) Vy(n,:)'-vbar(:,2)]'; % Not used anywhere !!
-% 
-%     EP_hat=[X(n,:); Y(n,:)]; 
-%     % 2xN, [EP_hat(1,i); EP_hat(2,i)] is the position error of agent i with sensing error.
-%     % Note above that in 2d case, only the first two rows of 'dp' (which is 3xN) are used.
-% 
-%     % The 'for' loop below caculates the effect of the repel term on each agent (in 3 dimensions).
-%     for i=1:N
-%         Ediff=EP_hat(:,i)*ones(1,N)-EP_hat; % 2xN matrix. Column j (1<=j<=N) contains the error position difference of agent i and agent j in [x;y] direction, respectively.
-%         dist=sqrt(sum(Ediff.*Ediff)); % 1xN vector. The jth component is the norm of the error difference of agent i and j. It's equal to the distance from agent i to agent j; or .
-%         xrepel(i)=sum(b*exp(-dist.^2/c).*(X(n,i)-X(n,:)));
-%         yrepel(i)=sum(b*exp(-dist.^2/c).*(Y(n,i)-Y(n,:)));
-%     end
-%     % The 'for' loop below calculates the discrete gradient for each agent at current position.
-%     A=zeros(N,2);
-%     for i=1:N
-%         NowJ=goalfunction0([X(n,i);Y(n,i)],xgoal,w2) + obstaclefunction([X(n,i);Y(n,i)],w1);
-%         partial_x=Vx(n,i)*Tstep;
-%         partial_y=Vy(n,i)*Tstep;
-%         partialJx=goalfunction0([X(n,i)+partial_x;Y(n,i)],xgoal,w2) + obstaclefunction([X(n,i)+partial_x;Y(n,i)],w1) - NowJ;
-%         partialJy=goalfunction0([X(n,i);Y(n,i)+partial_y],xgoal,w2) + obstaclefunction([X(n,i);Y(n,i)+partial_y],w1) - NowJ;        
-%         A(i,:)=[partialJx/partial_x partialJy/partial_y];
-%     end
-% 
-%     % Calculate the control input on two dimension x,y. Each u (i.e., ux, uy) is a 1xN vector.
-%     ux=-k1*(X(n,:)-pos_target(:,1)') - k2*(Vx(n,:)-mean(Vx(n,:))) - kv*Vx(n,:) + xrepel - kf*(A(:,1)'); %Note A
-%     uy=-k1*(Y(n,:)-pos_target(:,2)') - k2*(Vy(n,:)-mean(Vy(n,:))) - kv*Vy(n,:) + yrepel - kf*(A(:,2)');
-% 
-%     % Calculates the position and velocity in the next time step (Euler's method).
-%     X(n+1,:)=X(n,:)+Vx(n,:)*Tstep;
-%     Y(n+1,:)=Y(n,:)+Vy(n,:)*Tstep;
-%     Vx(n+1,:)=Vx(n,:) + ux*ScaleU*Tstep;
-%     Vy(n+1,:)=Vy(n,:) + uy*ScaleU*Tstep;
+    [Xtemp,Ytemp,VxTemp,VyTemp,intrmdtSteps] = updatePosition(X,Y,Vx,Vy,w1,w2,k1,k2,kv,kf,xgoal,N,b,c,Tstep,ScaleU,pos_target);
+    X = Xtemp(end,:); % Overwriting previous X with new value (1 X N)
+    Y = Ytemp(end,:); % Overwriting previous Y with new value (1 X N)
+    Vx = VxTemp(end,:); % Overwriting previous Vx with new value (1 X N)
+    Vy = VyTemp(end,:); % Overwriting previous Vy with new value (1 X N)
+    
+    X_nth(n,:) = Xtemp(end,:); % This is (n X N) X-values
+    Y_nth(n,:) = Ytemp(end,:); % This is (n X N) Y-values
+    
+    X_all{:,n} = Xtemp; % {1 X n}(intrmdtSteps X N)
+    Y_all{:,n} = Ytemp;
+    Vx_all{:,n} = VxTemp;
+    Vy_all{:,n} = VyTemp;
     
 end
 toc

@@ -47,6 +47,7 @@ function [Xtemp,Ytemp,VxTemp,VyTemp,j] = updatePosition(Xtemp,Ytemp,VxTemp,VyTem
         expected = zeros(1,N);
         tolerance = 1e-4;
         if max(abs(result(:) - expected(:))) < tolerance % If already reached near formation coordinates, then stop
+            j = j+1; % Saving total number of intermediate steps needed for reaching next formation coordinates correctly
             break;
         end
     end
