@@ -44,11 +44,16 @@ function [Xtemp,Ytemp,VxTemp,VyTemp,j] = updatePosition(Xtemp,Ytemp,VxTemp,VyTem
         VyTemp(j+1,:)=VyTemp(j,:) + uy*ScaleU*Tstep;
         
         % Stop when next N X 2 coordinates nearly same as previous N X 2 coordinates
-        result = sqrt(power(Xtemp(j+1,:)-Xtemp(j,:),2)+power(Ytemp(j+1,:)-Ytemp(j,:),2));
+        result = sqrt(power(Xtemp(j+1,:)-Xtemp(j,:),2)+power(Ytemp(j+1,:)-Ytemp(j,:),2)); % If distance of movement between previous and current coordinates less than 0.00000001
         expected = zeros(1,N);
-        tolerance = 1e-4;
+        tolerance = 1e-8;
         if max(abs(result(:) - expected(:))) < tolerance % If already reached near formation coordinates, then stop
             j = j+1; % Saving total number of intermediate steps needed for reaching next formation coordinates correctly
+%             figure
+%             plot(pos_target(:,1),pos_target(:,2),'ro')
+%             hold on
+%             plot(Xtemp(j,:),Ytemp(j,:),'b*')
+%             hold off
             break;
         end
     end

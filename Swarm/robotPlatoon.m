@@ -112,7 +112,7 @@ for n=1:Tfinal/Tstep-1
     % This will contain not just the vertex coordinates, rather coordinates of all N agents where they need to be placed next
     pos_target=triangleAgents(N,vertCoor,c);
     
-    [Xtemp,Ytemp,VxTemp,VyTemp,intrmdtSteps] = updatePosition(X,Y,Vx,Vy,w1,w2,k1,k2,kv,kf,xgoal,N,b,c,Tstep,ScaleU,pos_target);
+    [Xtemp,Ytemp,VxTemp,VyTemp,intrmdtSteps(1,n)] = updatePosition(X,Y,Vx,Vy,w1,w2,k1,k2,kv,kf,xgoal,N,b,c,Tstep,ScaleU,pos_target);
     X = Xtemp(end,:); % Overwriting previous X with new value (1 X N)
     Y = Ytemp(end,:); % Overwriting previous Y with new value (1 X N)
     Vx = VxTemp(end,:); % Overwriting previous Vx with new value (1 X N)
@@ -120,6 +120,8 @@ for n=1:Tfinal/Tstep-1
     
     X_nth(n,:) = Xtemp(end,:); % This is (n X N) X-values
     Y_nth(n,:) = Ytemp(end,:); % This is (n X N) Y-values
+    Vx_nth(n,:) = VxTemp(end,:);
+    Vy_nth(n,:) = VyTemp(end,:);
     
     X_all{:,n} = Xtemp; % {1 X n}(intrmdtSteps X N)
     Y_all{:,n} = Ytemp;
@@ -129,7 +131,7 @@ for n=1:Tfinal/Tstep-1
 end
 toc
 
-t=(1:length(X))'*Tstep; 
+t=(1:(length(X_nth)*intrmdtSteps))'*Tstep; 
 var=0; % Just for convenience such that the plot commands below, which was for continous time case, are still valid.
 
 
@@ -158,11 +160,11 @@ for jj=1:length(xx)
 	end
 end
 
-[temp1,temp2]=size(X);
+[temp1,temp2]=size(X_nth);
 if (Tfinal>=20)
-    temparray = 1:(Tfinal/20)*5:temp1;
+    temparray = 1:(Tfinal/20)*5:temp1*intrmdtSteps;
 else
-    temparray = 1:temp1;
+    temparray = 1:temp1*intrmdtSteps;
 end
 
 figure(1) %Plot initialized agents' positions and final goal coordinate
@@ -187,8 +189,8 @@ figure(2)
     subplot(2,2,1)
     grid on;
     hold on;
-    plot(t(temparray,:),X(temparray,:),'linewidth',1)
-    axis([0, floor(max(t)/10)*10*(t(end)>=10)+t(end)*(t(end)<10), floor(min(min(X))/10)*10, ceil(max(max(X))/10)*10]);
+    plot(t(temparray,:),X_nth(temparray,:),'linewidth',1)
+    axis([0, floor(max(t)/10)*10*(t(end)>=10)+t(end)*(t(end)<10), floor(min(min(X_nth))/10)*10, ceil(max(max(X_nth))/10)*10]);
     title('Swarm agent position trajectories, x dimension')
     xlabel('Time, sec.')
     hold off;
@@ -196,8 +198,8 @@ figure(2)
     subplot(2,2,3)
     grid on;
     hold on;
-    plot(t(temparray,:),Y(temparray,:),'linewidth',1)
-    axis([0, floor(max(t)/10)*10*(t(end)>=10)+t(end)*(t(end)<10), floor(min(min(Y))/10)*10, ceil(max(max(Y))/10)*10]);
+    plot(t(temparray,:),Y_nth(temparray,:),'linewidth',1)
+    axis([0, floor(max(t)/10)*10*(t(end)>=10)+t(end)*(t(end)<10), floor(min(min(Y_nth))/10)*10, ceil(max(max(Y_nth))/10)*10]);
     title('Swarm agent position trajectories, y dimension')
     xlabel('Time, sec.')
     hold off;
@@ -206,8 +208,8 @@ figure(2)
     subplot(2,2,2)
     grid on;
     hold on;
-    plot(t(temparray,:),Vx(temparray,:),'linewidth',1)
-    axis([0, floor(max(t)/10)*10*(t(end)>=10)+t(end)*(t(end)<10), floor(min(min(Vx))/10)*10, ceil(max(max(Vx))/10)*10]);
+    plot(t(temparray,:),Vx_nth(temparray,:),'linewidth',1)
+    axis([0, floor(max(t)/10)*10*(t(end)>=10)+t(end)*(t(end)<10), floor(min(min(Vx_nth))/10)*10, ceil(max(max(Vx_nth))/10)*10]);
     title('Deviation from mean velocity, x dimension')
     xlabel('Time, sec.')
     axis([0,Tfinal,-20,20]);
@@ -216,8 +218,8 @@ figure(2)
     subplot(2,2,4)
     grid on;
     hold on;
-    plot(t(temparray,:),Vy(temparray,:),'linewidth',1)
-    axis([0, floor(max(t)/10)*10*(t(end)>=10)+t(end)*(t(end)<10), floor(min(min(Vy))/10)*10, ceil(max(max(Vy))/10)*10]);
+    plot(t(temparray,:),Vy_nth(temparray,:),'linewidth',1)
+    axis([0, floor(max(t)/10)*10*(t(end)>=10)+t(end)*(t(end)<10), floor(min(min(Vy_nth))/10)*10, ceil(max(max(Vy_nth))/10)*10]);
     title('Deviation from mean velocity, y dimension')
     xlabel('Time, sec.')
     axis([0,Tfinal,-20,20]);
@@ -231,11 +233,11 @@ figure(3) % Plot trajectory of path taken by agents to reach goal from beginning
     hold on;
     plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
     title('Swarm agent position trajectories')
-    plot(X(temparray,:),Y(temparray,:),'LineStyle',':') 
+    plot(X_nth(temparray,:),Y_nth(temparray,:),'LineStyle',':') 
     xlabel('x')
     ylabel('y')
     plot(X0,Y0,'bs')
-    plot(X(temp1,:),Y(temp1,:),'ro','LineWidth',2);
+    plot(X_nth(temp1,:),Y_nth(temp1,:),'ro','LineWidth',2);
     hold off;
 fprintf("\nEnd of plotting using %d seconds as simulation time.\n",Tfinal)
 toc
@@ -250,7 +252,7 @@ if flagg==1
     
     figure(4)
     clf
-    axis([min(min(X)) max(max(X)) min(min(Y)) max(max(Y))]);
+    axis([min(min(X_nth)) max(max(X_nth)) min(min(Y_nth)) max(max(Y_nth))]);
     
     R=20; % Set decimate factor
     
