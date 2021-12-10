@@ -20,7 +20,7 @@ function ft=triangleAgents(num,triangle_vertex,minDist)
          dist = sqrt(power((arr(1,1)-arr(2,1)),2)+power((arr(1,2)-arr(2,2)),2)); % Distance between points AB = AC
          numPoints = floor((num-2)/2); % Returns total number of agents that has to be fit between A and B
          subDist = dist/(numPoints+1); % Distance between B to P2L
-         if subDist < minDist
+         if subDist < minDist*2
                 error('Not enough space to initialise %d agents',num);
          end
          % Now, applying the formula (P will have order of numPoints,2)

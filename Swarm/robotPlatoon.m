@@ -112,7 +112,7 @@ for n=1:Tfinal/Tstep-1
     % This will contain not just the vertex coordinates, rather coordinates of all N agents where they need to be placed next
     pos_target=triangleAgents(N,vertCoor,c);
     
-    [Xtemp,Ytemp,VxTemp,VyTemp,intrmdtSteps(1,n)] = updatePosition(X,Y,Vx,Vy,w1,w2,k1,k2,kv,kf,xgoal,N,b,c,Tstep,ScaleU,pos_target);
+    [Xtemp,Ytemp,VxTemp,VyTemp,intrmdtSteps(1,n)] = updatePosition(X,Y,Vx,Vy,k1,k2,kv,N,b,c,Tstep,ScaleU,pos_target);
     X = Xtemp(end,:); % Overwriting previous X with new value (1 X N)
     Y = Ytemp(end,:); % Overwriting previous Y with new value (1 X N)
     Vx = VxTemp(end,:); % Overwriting previous Vx with new value (1 X N)
@@ -131,7 +131,7 @@ for n=1:Tfinal/Tstep-1
 end
 toc
 
-t=(1:(length(X_nth)*intrmdtSteps))'*Tstep; 
+t=(1:(length(X_nth)))'*Tstep; 
 var=0; % Just for convenience such that the plot commands below, which was for continous time case, are still valid.
 
 
