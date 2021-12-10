@@ -43,6 +43,7 @@ function [Xtemp,Ytemp,VxTemp,VyTemp,j] = updatePosition(Xtemp,Ytemp,VxTemp,VyTem
         VxTemp(j+1,:)=VxTemp(j,:) + ux*ScaleU*Tstep;
         VyTemp(j+1,:)=VyTemp(j,:) + uy*ScaleU*Tstep;
         
+        % Stop when next N X 2 coordinates nearly same as previous N X 2 coordinates
         result = sqrt(power(Xtemp(j+1,:)-Xtemp(j,:),2)+power(Ytemp(j+1,:)-Ytemp(j,:),2));
         expected = zeros(1,N);
         tolerance = 1e-4;
