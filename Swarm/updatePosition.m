@@ -1,3 +1,5 @@
+% This function starts movement from present coordinates to given triangle
+% coordinates on each iteration
 function [Xtemp,Ytemp,VxTemp,VyTemp,j] = updatePosition(Xtemp,Ytemp,VxTemp,VyTemp,k1,k2,kv,N,b,c,Tstep,ScaleU,pos_target)
 
     j = 0; % No. of steps required to reach the formation coordinates
@@ -42,7 +44,14 @@ function [Xtemp,Ytemp,VxTemp,VyTemp,j] = updatePosition(Xtemp,Ytemp,VxTemp,VyTem
         Ytemp(j+1,:)=Ytemp(j,:)+VyTemp(j,:)*Tstep;
         VxTemp(j+1,:)=VxTemp(j,:) + ux*ScaleU*Tstep;
         VyTemp(j+1,:)=VyTemp(j,:) + uy*ScaleU*Tstep;
-        
+% Debugging code here
+%         plot(Xtemp(j+1,:),Ytemp(j+1,:),'m*','LineWidth',2);
+%         hold on;
+%         axis([-5 30 -5 30]);
+%         plot(pos_target(:,1),pos_target(:,2),'go');
+%         hold off;
+%         M(:,j)=getframe(gcf);
+% Debugging code here
         % Stop when next N X 2 coordinates nearly same as previous N X 2 coordinates
         %result = sqrt(power(Xtemp(j+1,:)-Xtemp(j,:),2)+power(Ytemp(j+1,:)-Ytemp(j,:),2)); % If distance of movement between previous and current coordinates less than 0.00000001
         %expected = zeros(1,N);
@@ -53,6 +62,8 @@ function [Xtemp,Ytemp,VxTemp,VyTemp,j] = updatePosition(Xtemp,Ytemp,VxTemp,VyTem
             j = j+1; % Saving total number of intermediate steps needed for reaching next formation coordinates correctly
             break;
         elseif j > 3000 % With higher number of agents, little corrections continue indefinitely
+            Xtemp(j+1,:) = pos_target(:,1)';
+            Ytemp(j+1,:) = pos_target(:,2)'; % Doing a dirty hack here to correct slight errors in limited time
             j = j+1;
             break;
         end
