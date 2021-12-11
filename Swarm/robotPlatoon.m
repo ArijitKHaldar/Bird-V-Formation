@@ -1,7 +1,7 @@
 % Main Code
 % (Information and data dictionary pending)
 %
-%
+% Please install "ffmpeg" and add to path before running this code for conversion to mp4 to work.
 
 
 %% Initialization
@@ -25,7 +25,7 @@ k2=k1;  % Choose this k2>=0. Velocities converge to mean faster with larger k2.
 kv=0.1;   % Velocity damping ('k')  (kv=10 for quadratic case?)
 kf=0.1;   % Gain on profile following (kf=50 for quadratic case?)
 b=10;  % Define parameters for repel function ('kr')
-c=1;  % Define parameter of rulpulsion region ('rs^2')
+c=1;  % Define parameter of repulsion region ('rs^2')
 
 % Define simulation parameters:
 Tfinal=80; % Units are seconds (keep it even)
@@ -127,7 +127,33 @@ for n=1:Tfinal/Tstep-1
     Y_all{:,n} = Ytemp;
     Vx_all{:,n} = VxTemp;
     Vy_all{:,n} = VyTemp;
-    
+% Debugging code here    
+%    plot(Circle_Co(:,1),Circle_Co(:,2));
+%    hold on;
+%    plot(X,Y,'m*','LineWidth',2);
+%    axis([-5 40 -5 40]);
+%    deleteThis = [7,17;
+%        9,17;
+%        12,17;
+%        15,17;
+%        17,17;
+%        10,15;
+%        12,14;
+%        14,15;
+%        9,14;
+%        12,12;
+%        15,14;
+%        10,19;
+%        12,20;
+%        14,19;
+%        9,20;
+%        12,22;
+%        15,20];
+%    plot(deleteThis(:,1),deleteThis(:,2),'bs','LineWidth',3);
+%    plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
+%    hold off;
+%    M(:,n)=getframe(gcf);
+% Debugging code here    
 end
 toc
 
