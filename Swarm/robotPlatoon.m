@@ -28,8 +28,8 @@ b=10;  % Define parameters for repel function ('kr')
 c=1;  % Define parameter of repulsion region ('rs^2')
 
 % Define simulation parameters:
-Tfinal=80; % Units are seconds (keep it even)
-Tstep=0.01;
+Tfinal=6; % Units are seconds (keep it even)
+Tstep=0.1; % Was 0.01
 Tspan=0:Tstep:Tfinal+Tstep;
 
 % Define initial conditions:
@@ -42,7 +42,11 @@ Vy0=ICsize2*rand(1,N);
 
 % Initialization of position and velocity
 X(1,1:N)=X0; Y(1,1:N)=Y0; % First dimension is time, second is N values of X (Y) position
-Vx(1,1:N)=Vx0; Vy(1,1:N)=Vy0; 
+Vx(1,1:N)=Vx0; Vy(1,1:N)=Vy0;
+X_nth(1,1:N)=X0;
+Y_nth(1,1:N)=Y0;
+Vx_nth(1,1:N)=Vx0;
+Vy_nth(1,1:N)=Vy0;
 
 % Goal position of vehicle
 xgoal=[25; 
@@ -118,10 +122,10 @@ for n=1:Tfinal/Tstep-1
     Vx = VxTemp(end,:); % Overwriting previous Vx with new value (1 X N)
     Vy = VyTemp(end,:); % Overwriting previous Vy with new value (1 X N)
     
-    X_nth(n,:) = Xtemp(end,:); % This is (n X N) X-values
-    Y_nth(n,:) = Ytemp(end,:); % This is (n X N) Y-values
-    Vx_nth(n,:) = VxTemp(end,:);
-    Vy_nth(n,:) = VyTemp(end,:);
+    X_nth(n+1,:) = Xtemp(end,:); % This is (n X N) X-values
+    Y_nth(n+1,:) = Ytemp(end,:); % This is (n X N) Y-values
+    Vx_nth(n+1,:) = VxTemp(end,:);
+    Vy_nth(n+1,:) = VyTemp(end,:);
     
     X_all{:,n} = Xtemp; % {1 X n}(intrmdtSteps X N)
     Y_all{:,n} = Ytemp;
@@ -157,7 +161,7 @@ for n=1:Tfinal/Tstep-1
 end
 toc
 
-t=(1:(length(X_nth)))'*Tstep; 
+t=(1:length(X_nth))'*Tstep; 
 var=0; % Just for convenience such that the plot commands below, which was for continous time case, are still valid.
 
 
@@ -188,9 +192,9 @@ end
 
 [temp1,temp2]=size(X_nth);
 if (Tfinal>=20)
-    temparray = 1:(Tfinal/20)*5:temp1*intrmdtSteps;
+    temparray = 1:(Tfinal/20)*5:temp1;
 else
-    temparray = 1:temp1*intrmdtSteps;
+    temparray = 1:temp1;
 end
 
 figure(1) %Plot initialized agents' positions and final goal coordinate
