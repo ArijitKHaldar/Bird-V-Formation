@@ -1,4 +1,4 @@
-function coordinate = trianglePeak(n,P,cirCenter,Circle_Co)
+function coordinate = trianglePeak(n,P,cirCenter,Circle_Co,xgoal)
     if(n == 1) % For first iteration, align using global origin
        x1 = P(1,1);
        x2 = 0;
@@ -8,7 +8,9 @@ function coordinate = trianglePeak(n,P,cirCenter,Circle_Co)
        r = P(1,3)-3;
        yintercept = 0;
        [xtemp,ytemp] = linecirc(m,yintercept,x1,y1,r);
-       if xtemp(1,1) > xtemp(1,2)
+       dist1 = sqrt(power((xgoal(1,1)-xtemp(1,1)),2)+power((xgoal(2,1)-ytemp(1,1)),2));
+       dist2 = sqrt(power((xgoal(1,1)-xtemp(1,2)),2)+power((xgoal(2,1)-ytemp(1,2)),2));
+       if dist1 < dist2
            minimum =1000;
            for i=1:1:length(Circle_Co)
                if(sqrt(power(Circle_Co(i,1)-xtemp(1,1),2)+power(Circle_Co(i,2)-ytemp(1,1),2)) < minimum)
@@ -36,7 +38,9 @@ function coordinate = trianglePeak(n,P,cirCenter,Circle_Co)
         r = P(1,3)-3;
         yintercept = (y1*x2-y2*x1)/(x2-x1);
         [xtemp,ytemp] = linecirc(m,yintercept,x1,y1,r);
-        if xtemp(1,1) > xtemp(1,2)
+        dist1 = sqrt(power((xgoal(1,1)-xtemp(1,1)),2)+power((xgoal(2,1)-ytemp(1,1)),2));
+        dist2 = sqrt(power((xgoal(1,1)-xtemp(1,2)),2)+power((xgoal(2,1)-ytemp(1,2)),2));
+        if dist1 < dist2
            minimum =1000;
            for i=1:1:length(Circle_Co)
                if(sqrt(power(Circle_Co(i,1)-xtemp(1,1),2)+power(Circle_Co(i,2)-ytemp(1,1),2)) < minimum)
