@@ -1,25 +1,26 @@
 % Obstacle function:
-% Author: K. Passino, Version: 1/25/01
+% Author: K. Passino, Version: 25/01/2001
+% Modified: Arijit Kumar Haldar
 function J=obstaclefunction(x,w1)
 
 % An example function to represent sensed obstacles:
-    obs = [7,17;
-        9,17;
-        12,17;
-        15,17;
-        17,17;
-        10,15;
-        12,14;
-        14,15;
-        9,14;
-        12,12;
-        15,14;
-        10,19;
-        12,20;
-        14,19;
-        9,20;
-        12,22;
-        15,20];
+    count = 1;
+    for i=2:0.3:7
+        obs(count,1) = i;
+        obs(count,2) = i+2;
+        count = count+1;
+    end
+    for i=7:0.3:12
+        obs(count,1) = i;
+        obs(count,2) = 9;
+        count = count+1;
+    end
+    for i=12:0.3:17
+        obs(count,1) = i;
+        obs(count,2) = i-3;
+        count = count+1;
+    end
+    
     for i=1:size(obs,1)
         fn(1,i) = exp(-0.8*((x(1,1)-obs(i,1))^2 + (x(2,1)-obs(i,2))^2));
     end
