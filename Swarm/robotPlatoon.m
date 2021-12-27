@@ -10,7 +10,7 @@
 % Institute: Jadavpur University, West Bengal, India.
 % Nov 3, 2021 - Present
 %
-% |   Variable   |   Value   |   Type   |           Description           |
+% |   Variable   |Possibl val|   Type   |           Description           |
 % |--------------|-----------|----------|---------------------------------|
 % |b             |           |          |                                 |
 % |b_sense       |           |          |                                 |
@@ -124,8 +124,15 @@ Vx0=ICsize2*rand(1,N);    % Pick random values for initial velocities in X and Y
 Vy0=ICsize2*rand(1,N);
 
 % Initialization of position and velocity
-X_nth(1,1:N)=X0; % First dimension is time, second is N values of X (Y) position
+X(1,1:N)=X0; % First dimension is time, second is N values of X (Y) position
+Y(1,1:N)=Y0; 
+
+Vx(1,1:N)=Vx0; 
+Vy(1,1:N)=Vy0;
+
+X_nth(1,1:N)=X0;
 Y_nth(1,1:N)=Y0;
+
 Vx_nth(1,1:N)=Vx0;
 Vy_nth(1,1:N)=Vy0;
 
@@ -248,7 +255,7 @@ var=0; % Just for convenience such that the plot commands below, which was for c
 
 
 %% Plotting
-%load("nine_agents_no_plot");
+%load("nine_agents_no_plot.mat");
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Plot the swarm trajectories
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
