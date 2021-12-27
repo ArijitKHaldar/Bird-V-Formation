@@ -1,6 +1,6 @@
-function vertices = triangleVertices(n,P,cirCenter,Circle_Co)
+function vertices = triangleVertices(n,P,cirCenter,Circle_Co,xgoal)
     
-    vertCoor(1,:) = trianglePeak(n,P,cirCenter,Circle_Co);
+    vertCoor(1,:) = trianglePeak(n,P,cirCenter,Circle_Co,xgoal);
     
     tmp = 1;
     
