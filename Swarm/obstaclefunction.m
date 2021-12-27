@@ -7,17 +7,17 @@ function J=obstaclefunction(x,w1)
     count = 1;
     for i=2:0.3:7
         obs(count,1) = i;
-        obs(count,2) = i+2;
+        obs(count,2) = i;
         count = count+1;
     end
     for i=7:0.3:12
         obs(count,1) = i;
-        obs(count,2) = 9;
+        obs(count,2) = 7;
         count = count+1;
     end
     for i=12:0.3:17
         obs(count,1) = i;
-        obs(count,2) = i-3;
+        obs(count,2) = i-5;
         count = count+1;
     end
     
