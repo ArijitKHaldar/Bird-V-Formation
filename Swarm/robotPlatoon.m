@@ -1,5 +1,88 @@
-% Main Code
-% (Information and data dictionary pending)
+% Forked from Kevin M. Passino's 
+% "Cooperative Robot Swarm Obstacle Avoidance MATLAB simulation"
+% http://eewww.eng.ohio-state.edu/~passino/ICbook/ic_code.html
+%
+% Masters in Electrical Engineering -> Control System
+% Dissertation work
+%
+% Author: Arijit Kumar Haldar
+% Guide: Prof. Madhubanti Maitra, Mr. Dibyendu Roy
+% Institute: Jadavpur University, West Bengal, India.
+% Nov 3, 2021 - Present
+%
+% |   Variable   |   Value   |   Type   |           Description           |
+% |--------------|-----------|----------|---------------------------------|
+% |b             |           |          |                                 |
+% |b_sense       |           |          |                                 |
+% |c             |           |          |                                 |
+% |c_sense       |           |          |                                 |
+% |cirCenter     |           |          |                                 |
+% |Circle_Co     |           |          |                                 |
+% |coor_x        |           |          |                                 |
+% |coor_y        |           |          |                                 |
+% |Df            |           |          |                                 |
+% |Dmax          |           |          |                                 |
+% |Dp2           |           |          |                                 |
+% |Dv2           |           |          |                                 |
+% |flagg         |           |          |                                 |
+% |ICsize1       |           |          |                                 |
+% |ICsize2       |           |          |                                 |
+% |intrmdtSteps  |           |          |                                 |
+% |k1            |           |          |                                 |
+% |k1_sense      |           |          |                                 |
+% |k2            |           |          |                                 |
+% |k2_sense      |           |          |                                 |
+% |kf            |           |          |                                 |
+% |kf_sense      |           |          |                                 |
+% |kv            |           |          |                                 |
+% |kv_sense      |           |          |                                 |
+% |loc_spline    |           |          |                                 |
+% |n             |           |          |                                 |
+% |N             |           |          |                                 |
+% |P             |           |          |                                 |
+% |pos_target    |           |          |                                 |
+% |ScaleU        |           |          |                                 |
+% |t             |           |          |                                 |
+% |Tfinal        |           |          |                                 |
+% |Tspan         |           |          |                                 |
+% |Tstep         |           |          |                                 |
+% |value1        |           |          |                                 |
+% |var           |           |          |                                 |
+% |vertCoor      |           |          |                                 |
+% |Vx            |           |          |                                 |
+% |Vx0           |           |          |                                 |
+% |Vx_all        |           |          |                                 |
+% |Vx_nth        |           |          |                                 |
+% |Vx_virAgent   |           |          |                                 |
+% |VxTemp        |           |          |                                 |
+% |Vy            |           |          |                                 |
+% |Vy0           |           |          |                                 |
+% |Vy_all        |           |          |                                 |
+% |Vy_nth        |           |          |                                 |
+% |Vy_virAgent   |           |          |                                 |
+% |VyTemp        |           |          |                                 |
+% |w1            |           |          |                                 |
+% |w2            |           |          |                                 |
+% |X             |           |          |                                 |
+% |X0            |           |          |                                 |
+% |X_all         |           |          |                                 |
+% |X_dash        |           |          |                                 |
+% |X_nth         |           |          |                                 |
+% |X_VAgent      |           |          |                                 |
+% |X_virAgent    |           |          |                                 |
+% |xgoal         |           |          |                                 |
+% |xrepel        |           |          |                                 |
+% |Xtemp         |           |          |                                 |
+% |Y             |           |          |                                 |
+% |Y0            |           |          |                                 |
+% |Y_all         |           |          |                                 |
+% |Y_dash        |           |          |                                 |
+% |Y_nth         |           |          |                                 |
+% |Y_VAgent      |           |          |                                 |
+% |Y_virAgent    |           |          |                                 |
+% |yrepel        |           |          |                                 |
+% |Ytemp         |           |          |                                 |
+%
 %
 % Please install "ffmpeg" and add to path before running this code for conversion to mp4 to work.
 
@@ -34,16 +117,14 @@ Tspan=0:Tstep:Tfinal+Tstep;
 
 % Define initial conditions:
 ICsize1=2; 
-ICsize2=2;
+ICsize2=2; % Change this to make initialization more random
 X0=ICsize1*rand(1,N)+3;   % Pick random values for initial positions in X and Y dimensions
 Y0=ICsize1*rand(1,N)+3;
 Vx0=ICsize2*rand(1,N);    % Pick random values for initial velocities in X and Y dimensions
 Vy0=ICsize2*rand(1,N);
 
 % Initialization of position and velocity
-X(1,1:N)=X0; Y(1,1:N)=Y0; % First dimension is time, second is N values of X (Y) position
-Vx(1,1:N)=Vx0; Vy(1,1:N)=Vy0;
-X_nth(1,1:N)=X0;
+X_nth(1,1:N)=X0; % First dimension is time, second is N values of X (Y) position
 Y_nth(1,1:N)=Y0;
 Vx_nth(1,1:N)=Vx0;
 Vy_nth(1,1:N)=Vy0;
@@ -167,7 +248,7 @@ var=0; % Just for convenience such that the plot commands below, which was for c
 
 
 %% Plotting
-
+%load("nine_agents_no_plot");
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Plot the swarm trajectories
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -288,8 +369,8 @@ if flagg==1
     
     for i=1:N
         
-        Xd(:,i)=decimate(X(:,i),R);    		% Decimate data to speed up movie
-        Yd(:,i)=decimate(Y(:,i),R);
+        Xd(:,i)=decimate(X_nth(:,i),R);    		% Decimate data to speed up movie
+        Yd(:,i)=decimate(Y_nth(:,i),R);
         
     end
     
