@@ -1,3 +1,4 @@
+% For all n ~= 1, i.e., for all iterations other than first
 function [X,Y,Vx,Vy]=mapNearbySpace_up_desTraj(k1,k2,kv,kf,b,c,X_1,Y_1,Vx_1,Vy_1,xgoal)
 
     Tstep=0.01;
@@ -20,7 +21,7 @@ function [X,Y,Vx,Vy]=mapNearbySpace_up_desTraj(k1,k2,kv,kf,b,c,X_1,Y_1,Vx_1,Vy_1
 
     count1=1;
 
-    for count1=1:50
+    for count1=1:49
 
         xbar=mean([X(end,:)' Y(end,:)']);       % 2x1 vector of means in X and Y dimensions
         vbar=mean([Vx(end,:)' Vy(end,:)']);      % and for velocity also
