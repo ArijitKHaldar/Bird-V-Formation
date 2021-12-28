@@ -10,10 +10,10 @@
 % Institute: Jadavpur University, West Bengal, India.
 % Nov 3, 2021 - Present
 %
-% |   Variable   |Possibl val|   Type   |           Description           |
+% |   Variable   |   Order   |  Value   |           Description           |
 % |--------------|-----------|----------|---------------------------------|
-% |b             |           |          |                                 |
-% |b_sense       |           |          |                                 |
+% |b             |1x1        |10        |Repulsion gain - Kr              |
+% |b_sense       |1x1        |15        |Sensing Parameter                |
 % |c             |           |          |                                 |
 % |c_sense       |           |          |                                 |
 % |cirCenter     |           |          |                                 |
@@ -99,6 +99,7 @@ if isempty(flagg)
 elseif flagg~=0 && flagg ~=1
     flagg = 0;
 end
+vertCoor = zeros(3,2);
 clc
 tic % Starting timer to start calculating elapsed time
 fprintf("\nStart simulation\n")
@@ -111,8 +112,8 @@ b=10;  % Define parameters for repel function ('kr')
 c=1;  % Define parameter of repulsion region ('rs^2')
 
 % Define simulation parameters:
-Tfinal=6; % Units are seconds (keep it even)
-Tstep=0.1; % Was 0.01
+Tfinal=2; % Units are seconds (preferably even)
+Tstep=0.01; % Was 0.01
 Tspan=0:Tstep:Tfinal+Tstep;
 
 % Define initial conditions:
@@ -198,7 +199,7 @@ for n=1:Tfinal/Tstep-1
     %Circle_Co{:,n} = [X_dash;Y_dash];
     Circle_Co = [X_dash,Y_dash]; % This has 50 coordinates on the circumference of the circle
 
-    vertCoor = triangleVertices(n,P,cirCenter,Circle_Co);
+    vertCoor = triangleVertices(n,P,cirCenter,Circle_Co,xgoal,vertCoor);
    
     % Set coordinates of vertices of triangle for starting formation
     % This will contain not just the vertex coordinates, rather coordinates of all N agents where they need to be placed next
@@ -220,31 +221,30 @@ for n=1:Tfinal/Tstep-1
     Vx_all{:,n} = VxTemp;
     Vy_all{:,n} = VyTemp;
 % Debugging code here    
-%    plot(Circle_Co(:,1),Circle_Co(:,2));
-%    hold on;
-%    plot(X,Y,'m*','LineWidth',2);
-%    axis([-5 40 -5 40]);
-%    deleteThis = [7,17;
-%        9,17;
-%        12,17;
-%        15,17;
-%        17,17;
-%        10,15;
-%        12,14;
-%        14,15;
-%        9,14;
-%        12,12;
-%        15,14;
-%        10,19;
-%        12,20;
-%        14,19;
-%        9,20;
-%        12,22;
-%        15,20];
-%    plot(deleteThis(:,1),deleteThis(:,2),'bs','LineWidth',3);
-%    plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
-%    hold off;
-%    M(:,n)=getframe(gcf);
+   plot(Circle_Co(:,1),Circle_Co(:,2));
+   hold on;
+   plot(X,Y,'m*','LineWidth',2);
+   axis([-5 40 -5 40]);
+   count111 = 1;
+   for i=2:0.3:7
+       deleteThis(count111,1) = i;
+       deleteThis(count111,2) = i;
+       count111 = count111+1;
+   end
+   for i=7:0.3:12
+       deleteThis(count111,1) = i;
+       deleteThis(count111,2) = 7;
+       count111 = count111+1;
+   end
+   for i=12:0.3:17
+       deleteThis(count111,1) = i;
+       deleteThis(count111,2) = i-5;
+       count111 = count111+1;
+   end
+   plot(deleteThis(:,1),deleteThis(:,2),'b*');
+   plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
+   hold off;
+   M(:,n)=getframe(gcf);
 % Debugging code here    
 end
 toc
