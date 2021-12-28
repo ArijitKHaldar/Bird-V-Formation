@@ -1,19 +1,19 @@
 % Forked from Kevin M. Passino's 
 % "Cooperative Robot Swarm Obstacle Avoidance MATLAB simulation"
-% http://eewww.eng.ohio-state.edu/~passino/ICbook/ic_code.html
+% [URL](http://eewww.eng.ohio-state.edu/~passino/ICbook/ic_code.html)
 %
-% Masters in Electrical Engineering -> Control System
-% Dissertation work
+% Master of Control System Engineering Dissertation work
 %
 % Author: Arijit Kumar Haldar
 % Guide: Prof. Madhubanti Maitra, Mr. Dibyendu Roy
-% Institute: Jadavpur University, West Bengal, India.
+% Department: Electrical Engineering
+% University: Jadavpur University, West Bengal, India.
 % Nov 3, 2021 - Present
 %
 % |   Variable   |   Order   |  Value   |           Description           |
 % |--------------|-----------|----------|---------------------------------|
 % |b             |1x1        |10        |Repulsion gain - Kr              |
-% |b_sense       |1x1        |15        |Sensing Parameter                |
+% |b_sense       |1x1        |15        |Sensing Parameter - Details?     |
 % |c             |           |          |                                 |
 % |c_sense       |           |          |                                 |
 % |cirCenter     |           |          |                                 |
@@ -27,7 +27,7 @@
 % |flagg         |           |          |                                 |
 % |ICsize1       |           |          |                                 |
 % |ICsize2       |           |          |                                 |
-% |intrmdtSteps  |           |          |                                 |
+% |intrmdtSteps  |           |          |Total no. of sub-steps for each n|
 % |k1            |           |          |                                 |
 % |k1_sense      |           |          |                                 |
 % |k2            |           |          |                                 |
@@ -113,7 +113,7 @@ c=1;  % Define parameter of repulsion region ('rs^2')
 
 % Define simulation parameters:
 Tfinal=2; % Units are seconds (preferably even)
-Tstep=0.01; % Was 0.01
+Tstep=0.01;
 Tspan=0:Tstep:Tfinal+Tstep;
 
 % Define initial conditions:
@@ -138,8 +138,8 @@ Vx_nth(1,1:N)=Vx0;
 Vy_nth(1,1:N)=Vy0;
 
 % Goal position of vehicle
-xgoal=[25; 
-       25];
+xgoal=[50; 
+       50];
 w1=120; 		% Set weighting factors on the goal function and obstacle function
 w2=0.1;
 
@@ -220,32 +220,32 @@ for n=1:Tfinal/Tstep-1
     Y_all{:,n} = Ytemp;
     Vx_all{:,n} = VxTemp;
     Vy_all{:,n} = VyTemp;
-% Debugging code here    
+% Debugging code below for quick visualization
    plot(Circle_Co(:,1),Circle_Co(:,2));
    hold on;
    plot(X,Y,'m*','LineWidth',2);
-   axis([-5 40 -5 40]);
+   axis([-5 65 -5 65]);
    count111 = 1;
-   for i=2:0.3:7
+   for i=2:0.3:10
        deleteThis(count111,1) = i;
-       deleteThis(count111,2) = i;
+       deleteThis(count111,2) = i+15;
        count111 = count111+1;
    end
-   for i=7:0.3:12
+   for i=10:0.3:35
        deleteThis(count111,1) = i;
-       deleteThis(count111,2) = 7;
+       deleteThis(count111,2) = 25;
        count111 = count111+1;
    end
-   for i=12:0.3:17
+   for i=35:0.3:43
        deleteThis(count111,1) = i;
-       deleteThis(count111,2) = i-5;
+       deleteThis(count111,2) = i-10;
        count111 = count111+1;
    end
    plot(deleteThis(:,1),deleteThis(:,2),'b*');
    plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
    hold off;
    M(:,n)=getframe(gcf);
-% Debugging code here    
+% Debugging code above for quick visualization   
 end
 toc
 
@@ -402,8 +402,8 @@ if flagg==1
         hold on;
         plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
         plot(Xd(j,:),Yd(j,:),'ro','LineWidth',2);
-        %axis([min(min(X)) max(max(X)) min(min(Y)) max(max(Y))]);
-        axis([-2 30 -2 30]);
+        %axis([min(min(X_nth)) max(max(X_nth)) min(min(Y_nth)) max(max(Y_nth))]);
+        axis([-2 65 -2 65]);
         xlabel('x')
         ylabel('y')
         title('Swarm agent position trajectories')

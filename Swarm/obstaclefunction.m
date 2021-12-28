@@ -5,19 +5,19 @@ function J=obstaclefunction(x,w1)
 
 % An example function to represent sensed obstacles:
     count = 1;
-    for i=2:0.3:7
+    for i=2:0.3:10
         obs(count,1) = i;
-        obs(count,2) = i;
+        obs(count,2) = i+15;
         count = count+1;
     end
-    for i=7:0.3:12
+    for i=10:0.3:35
         obs(count,1) = i;
-        obs(count,2) = 7;
+        obs(count,2) = 25;
         count = count+1;
     end
-    for i=12:0.3:17
+    for i=35:0.3:43
         obs(count,1) = i;
-        obs(count,2) = i-5;
+        obs(count,2) = i-10;
         count = count+1;
     end
     
