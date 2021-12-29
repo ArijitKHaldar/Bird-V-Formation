@@ -1,5 +1,5 @@
 % For all n ~= 1, i.e., for all iterations other than first
-function [X,Y,Vx,Vy]=mapNearbySpace_up_desTraj(k1,k2,kv,kf,b,c,X_1,Y_1,Vx_1,Vy_1,xgoal)
+function [X,Y,Vx,Vy]=mapNearbySpace_up_desTraj(k1,k2,kv,kf,b,c,X_1,Y_1,Vx_1,Vy_1,xgoal,obstacle)
 
     Tstep=0.01;
     N=100;
@@ -40,13 +40,13 @@ function [X,Y,Vx,Vy]=mapNearbySpace_up_desTraj(k1,k2,kv,kf,b,c,X_1,Y_1,Vx_1,Vy_1
         A=[];
         for i=1:N
     %         NowJ=goalfunction0([X(end,i);Y(end,i)],xgoal,w2) + obstaclefunctionComplex([X(end,i);Y(end,i)],w1);
-            NowJ=goalfunction0([X(end,i);Y(end,i)],xgoal,w2) + obstaclefunction([X(end,i);Y(end,i)],w1);
+            NowJ=goalfunction0([X(end,i);Y(end,i)],xgoal,w2) + obstaclefunction([X(end,i);Y(end,i)],w1,obstacle);
             partial_x=Vx(end,i)*Tstep;
             partial_y=Vy(end,i)*Tstep;
     %         partialJx=goalfunction0([X(end,i)+partial_x;Y(end,i)],xgoal,w2) + obstaclefunctionComplex([X(end,i)+partial_x;Y(end,i)],w1) - NowJ;
     %         partialJy=goalfunction0([X(end,i);Y(end,i)+partial_y],xgoal,w2) + obstaclefunctionComplex([X(end,i);Y(end,i)+partial_y],w1) - NowJ;        
-            partialJx=goalfunction0([X(end,i)+partial_x;Y(end,i)],xgoal,w2) + obstaclefunction([X(end,i)+partial_x;Y(end,i)],w1) - NowJ;
-            partialJy=goalfunction0([X(end,i);Y(end,i)+partial_y],xgoal,w2) + obstaclefunction([X(end,i);Y(end,i)+partial_y],w1) - NowJ;        
+            partialJx=goalfunction0([X(end,i)+partial_x;Y(end,i)],xgoal,w2) + obstaclefunction([X(end,i)+partial_x;Y(end,i)],w1,obstacle) - NowJ;
+            partialJy=goalfunction0([X(end,i);Y(end,i)+partial_y],xgoal,w2) + obstaclefunction([X(end,i);Y(end,i)+partial_y],w1,obstacle) - NowJ;        
             A(i,:)=[partialJx/partial_x partialJy/partial_y];
         end
 
