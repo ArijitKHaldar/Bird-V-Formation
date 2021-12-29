@@ -101,6 +101,8 @@ elseif flagg~=0 && flagg ~=1
 end
 vertCoor = zeros(3,2);
 clc
+count = 1;
+
 tic % Starting timer to start calculating elapsed time
 fprintf("\nStart simulation\n")
 
@@ -137,6 +139,23 @@ Y_nth(1,1:N)=Y0;
 Vx_nth(1,1:N)=Vx0;
 Vy_nth(1,1:N)=Vy0;
 
+% Obstacle positions
+for o_i=2:0.3:10
+   obstacle(count,1) = o_i;
+   obstacle(count,2) = o_i+15;
+   count = count+1;
+end
+for o_i=10:0.3:35
+   obstacle(count,1) = o_i;
+   obstacle(count,2) = 25;
+   count = count+1;
+end
+for o_i=35:0.3:43
+   obstacle(count,1) = o_i;
+   obstacle(count,2) = o_i-10;
+   count = count+1;
+end
+
 % Goal position of vehicle
 xgoal=[50; 
        50];
@@ -170,9 +189,9 @@ for n=1:Tfinal/Tstep-1
 
     %tic
     if(n==1)
-        [X_virAgent,Y_virAgent,Vx_virAgent,Vy_virAgent]=mapNearbySpace_desTraj(k1_sense,k2_sense,kv_sense,kf_sense,b_sense,c_sense,xgoal);
+        [X_virAgent,Y_virAgent,Vx_virAgent,Vy_virAgent]=mapNearbySpace_desTraj(k1_sense,k2_sense,kv_sense,kf_sense,b_sense,c_sense,xgoal,obstacle);
     else 
-        [X_virAgent,Y_virAgent,Vx_virAgent,Vy_virAgent]=mapNearbySpace_up_desTraj(k1_sense,k2_sense,kv_sense,kf_sense,b_sense,c_sense,X_virAgent,Y_virAgent,Vx_virAgent,Vy_virAgent,xgoal);
+        [X_virAgent,Y_virAgent,Vx_virAgent,Vy_virAgent]=mapNearbySpace_up_desTraj(k1_sense,k2_sense,kv_sense,kf_sense,b_sense,c_sense,X_virAgent,Y_virAgent,Vx_virAgent,Vy_virAgent,xgoal,obstacle);
     end
     %fprintf('\nSensing\n')
     %toc
@@ -189,16 +208,22 @@ for n=1:Tfinal/Tstep-1
     P = CircleFitByPratt([coor_x(:)';coor_y(:)']);
     %fprintf('\n\nmainCircle fit\n')
     %toc
-    
-    loc_spline = [P(1,1) P(1,2)];
-    cirCenter(n,:) = loc_spline; % This has the coordinates of center of circle after fitting is done
-    
-    [X_dash,Y_dash] = findCirclePoints(P);
+    in = 1;
+    on = 1;
+    while any(in)||any(on) % Iterate until circle not touching or on any obstacle
+        loc_spline = [P(1,1) P(1,2)];
+        cirCenter(n,:) = loc_spline; % This has the coordinates of center of circle after fitting is done
+        [X_dash,Y_dash] = findCirclePoints(P);
+        Circle_Co = [X_dash,Y_dash]; % This has 50 coordinates on the circumference of the circle
+        [in,on] = inpolygon(obstacle(:,1),obstacle(:,2),Circle_Co(:,1),Circle_Co(:,2));
+        if any(in)||any(on)
+            P(1,1) = P(1,1);
+            P(1,2) = P(1,2)-4.0;
+        end
+    end
     %X_dash = X_dash';
     %Y_dash = Y_dash';
     %Circle_Co{:,n} = [X_dash;Y_dash];
-    Circle_Co = [X_dash,Y_dash]; % This has 50 coordinates on the circumference of the circle
-
     vertCoor = triangleVertices(n,P,cirCenter,Circle_Co,xgoal,vertCoor);
    
     % Set coordinates of vertices of triangle for starting formation
@@ -225,23 +250,7 @@ for n=1:Tfinal/Tstep-1
    hold on;
    plot(X,Y,'m*','LineWidth',2);
    axis([-5 65 -5 65]);
-   count111 = 1;
-   for i=2:0.3:10
-       deleteThis(count111,1) = i;
-       deleteThis(count111,2) = i+15;
-       count111 = count111+1;
-   end
-   for i=10:0.3:35
-       deleteThis(count111,1) = i;
-       deleteThis(count111,2) = 25;
-       count111 = count111+1;
-   end
-   for i=35:0.3:43
-       deleteThis(count111,1) = i;
-       deleteThis(count111,2) = i-10;
-       count111 = count111+1;
-   end
-   plot(deleteThis(:,1),deleteThis(:,2),'b*');
+   plot(obstacle(:,1),obstacle(:,2),'b*');
    plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
    hold off;
    M(:,n)=getframe(gcf);
@@ -269,7 +278,7 @@ yy=xx;
 
 for jj=1:length(xx)
 	for ii=1:length(yy)
-		zz(ii,jj)=obstaclefunction([xx(jj);yy(ii)],w1);
+		zz(ii,jj)=obstaclefunction([xx(jj);yy(ii)],w1,obstacle);
 	end
 end
 for jj=1:length(xx)
