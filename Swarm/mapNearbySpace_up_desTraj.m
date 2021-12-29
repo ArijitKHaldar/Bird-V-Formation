@@ -10,7 +10,7 @@ function [X,Y,Vx,Vy]=mapNearbySpace_up_desTraj(k1,k2,kv,kf,b,c,X_1,Y_1,Vx_1,Vy_1
                     % w1=120 and w2=0.1 give good result ! 03/11/03
     w2=1.0000e-01;
 
-    Dmax=10; % The magnitude of the noise. Since we use uniform noise of Matlab here, Dmax=1.
+%     Dmax=10; % The magnitude of the noise. Since we use uniform noise of Matlab here, Dmax=1.
     ScaleU=10; % This is used to change the magnitude of the control input ux and uy.
 
     % Initialization of position and velocity
@@ -19,12 +19,12 @@ function [X,Y,Vx,Vy]=mapNearbySpace_up_desTraj(k1,k2,kv,kf,b,c,X_1,Y_1,Vx_1,Vy_1
     Vx(1,1:N)=Vx_1(end,:); 
     Vy(1,1:N)=Vy_1(end,:); 
 
-    count1=1;
+%     count1=1;
 
     for count1=1:49
 
-        xbar=mean([X(end,:)' Y(end,:)']);       % 2x1 vector of means in X and Y dimensions
-        vbar=mean([Vx(end,:)' Vy(end,:)']);      % and for velocity also
+%         xbar=mean([X(end,:)' Y(end,:)']);       % 2x1 vector of means in X and Y dimensions
+%         vbar=mean([Vx(end,:)' Vy(end,:)']);      % and for velocity also
 
         %ErrorMatrix=[X(end,:)-xbar(1); Y(end,:)-xbar(2); Vx(end,:)-vbar(1); Vy(end,:)-vbar(2)];
 
@@ -62,6 +62,6 @@ function [X,Y,Vx,Vy]=mapNearbySpace_up_desTraj(k1,k2,kv,kf,b,c,X_1,Y_1,Vx_1,Vy_1
         Vx(end+1,:)=Vx(end,:) + ux(end,:)*ScaleU*Tstep;
         Vy(end+1,:)=Vy(end,:) + uy(end,:)*ScaleU*Tstep;
 
-        count1=count1+1;
+%         count1=count1+1;
     end
 end
