@@ -62,8 +62,8 @@ function [Xtemp,Ytemp,VxTemp,VyTemp,j] = updatePosition(Xtemp,Ytemp,VxTemp,VyTem
             j = j+1; % Saving total number of intermediate steps needed for reaching next formation coordinates correctly
             break;
         elseif j > 3000 % With higher number of agents, little corrections continue indefinitely
-            Xtemp(j+1,:) = pos_target(:,1)';
-            Ytemp(j+1,:) = pos_target(:,2)'; % Doing a dirty hack here to correct slight errors in limited time
+%             Xtemp(j+1,:) = pos_target(:,1)';
+%             Ytemp(j+1,:) = pos_target(:,2)'; % Doing a dirty hack here to correct slight errors in limited time
             j = j+1;
             break;
         end
