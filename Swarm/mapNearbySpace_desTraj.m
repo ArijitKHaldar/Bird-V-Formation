@@ -2,7 +2,7 @@
 function [X,Y,Vx,Vy]=mapNearbySpace_desTraj(k1,k2,kv,kf,b,c,xgoal,obstacle)
 
     Tstep=0.01;
-    N=100;
+    N=200;
 
     % Define initial conditions:
     ICsize1=2; ICsize2=2;
