@@ -4,10 +4,10 @@
 %
 % Master of Control System Engineering Dissertation work
 %
-% Author: Arijit Kumar Haldar
-% Guide: Prof. Madhubanti Maitra, Mr. Dibyendu Roy
-% Department: Electrical Engineering
-% University: Jadavpur University, West Bengal, India.
+% * Author: Arijit Kumar Haldar
+% * Guide: Prof. Madhubanti Maitra, Mr. Dibyendu Roy
+% * Department: Electrical Engineering
+% * University: Jadavpur University, West Bengal, India.
 % Nov 3, 2021 - Present
 %
 % |   Variable   |   Order   |  Value   |           Description           |
@@ -24,7 +24,7 @@
 % |Dmax          |           |          |                                 |
 % |Dp2           |           |          |                                 |
 % |Dv2           |           |          |                                 |
-% |flagg         |           |          |                                 |
+% |flag          |           |          |                                 |
 % |ICsize1       |           |          |                                 |
 % |ICsize2       |           |          |                                 |
 % |intrmdtSteps  |           |          |Total no. of sub-steps for each n|
@@ -93,15 +93,14 @@ close all hidden
 clc
 
 N=input('Enter number of agents (minimum 3): ');	% The number of agents (individuals) in swarm
-flagg=input('Do you want to see animated plot? \n[For yes enter 1, for NO enter 0] : ');
-if isempty(flagg)
-    flagg = 0;
-elseif flagg~=0 && flagg ~=1
-    flagg = 0;
+flag=input('Do you want to see animated plot? \n[For yes enter 1, for NO enter 0] : ');
+if isempty(flag)
+    flag = 0;
+elseif flag~=0 && flag ~=1
+    flag = 0;
 end
 vertCoor = zeros(3,2);
 clc
-count = 1;
 
 tic % Starting timer to start calculating elapsed time
 fprintf("\nStart simulation\n")
@@ -140,6 +139,7 @@ Vx_nth(1,1:N)=Vx0;
 Vy_nth(1,1:N)=Vy0;
 
 % Obstacle positions
+count = 1;
 for o_i=2:0.3:10
    obstacle(count,1) = o_i;
    obstacle(count,2) = o_i+15;
@@ -163,12 +163,12 @@ w1=120; 		% Set weighting factors on the goal function and obstacle function
 w2=0.1;
 
 % Redefine the noise bound. 
-value1=60;% The magnitude of noise for discrete time case.
-Dp2=value1/10; 
-Dv2=value1/10; 
-Df=value1;
+% value1=60;% The magnitude of noise for discrete time case.
+% Dp2=value1/10; 
+% Dv2=value1/10; 
+% Df=value1;
 
-Dmax=1; % The magnitude of the noise. Since we use uniform noise of Matlab here, Dmax=1.
+% Dmax=1; % The magnitude of the noise. Since we use uniform noise of Matlab here, Dmax=1.
 ScaleU=10; % This is used to change the magnitude of the control input ux and uy.
 xrepel=zeros(1,N);
 yrepel=zeros(1,N);
@@ -208,19 +208,8 @@ for n=1:Tfinal/Tstep-1
     P = CircleFitByPratt([coor_x(:)';coor_y(:)']);
     %fprintf('\n\nmainCircle fit\n')
     %toc
-    in = 1;
-    on = 1;
-    while any(in)||any(on) % Iterate until circle not touching or on any obstacle
-        loc_spline = [P(1,1) P(1,2)];
-        cirCenter(n,:) = loc_spline; % This has the coordinates of center of circle after fitting is done
-        [X_dash,Y_dash] = findCirclePoints(P);
-        Circle_Co = [X_dash,Y_dash]; % This has 50 coordinates on the circumference of the circle
-        [in,on] = inpolygon(obstacle(:,1),obstacle(:,2),Circle_Co(:,1),Circle_Co(:,2));
-        if any(in)||any(on)
-            P(1,1) = P(1,1);
-            P(1,2) = P(1,2)-4.0;
-        end
-    end
+    [P,Circle_Co,cirCenter_fn] = checkObstacleFree_CirclePlacement(obstacle,P);
+    cirCenter(n,:) = cirCenter_fn;
     %X_dash = X_dash';
     %Y_dash = Y_dash';
     %Circle_Co{:,n} = [X_dash;Y_dash];
@@ -246,14 +235,14 @@ for n=1:Tfinal/Tstep-1
     Vx_all{:,n} = VxTemp;
     Vy_all{:,n} = VyTemp;
 % Debugging code below for quick visualization
-   plot(Circle_Co(:,1),Circle_Co(:,2));
-   hold on;
-   plot(X,Y,'m*','LineWidth',2);
-   axis([-5 65 -5 65]);
-   plot(obstacle(:,1),obstacle(:,2),'b*');
-   plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
-   hold off;
-   M(:,n)=getframe(gcf);
+%    plot(Circle_Co(:,1),Circle_Co(:,2));
+%    hold on;
+%    plot(X,Y,'m*','LineWidth',2);
+%    axis([-5 xgoal(1,1)+15 -5 xgoal(1,1)+15]);
+%    plot(obstacle(:,1),obstacle(:,2),'b*');
+%    plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
+%    hold off;
+%    M(:,n)=getframe(gcf);
 % Debugging code above for quick visualization   
 end
 toc
@@ -270,7 +259,7 @@ var=0; % Just for convenience such that the plot commands below, which was for c
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tic
 % Plot the functions:
-kk=40;
+kk=xgoal(1,1)+15;
 xx=-5:(kk+1)/100:kk;   % For our function the range of values we are considering
 yy=xx;
 
@@ -296,7 +285,7 @@ end
 
 figure(1) %Plot initialized agents' positions and final goal coordinate
     clf
-    contour(xx,yy,zz+zzz,40)
+    contour(xx,yy,zz+zzz,xgoal(1,1)+15)
     colormap(jet)
     % Use next line for generating plots to put in black and white documents.
     %colormap(gray)
@@ -355,7 +344,7 @@ figure(2)
 
 figure(3) % Plot trajectory of path taken by agents to reach goal from beginning
     clf
-    contour(xx,yy,zz+zzz,40)
+    contour(xx,yy,zz+zzz,xgoal(1,1)+15)
     colormap(jet)
     hold on;
     plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
@@ -370,10 +359,10 @@ fprintf("\nEnd of plotting using %d seconds as simulation time.\n",Tfinal)
 toc
 
 % Next, produce a movie:
-% Set flagg to 1 if want to see a movie
+% Set flag to 1 if want to see a movie
 Xd=[];
 Yd=[];
-if flagg==1
+if flag==1
     tic
     fprintf("\nStarting animated plot...please wait...\n")
     
@@ -406,13 +395,13 @@ if flagg==1
     open(videosave);
     for j=1:temp1d
         clf;
-        contour(xx,yy,zz+zzz,40)
+        contour(xx,yy,zz+zzz,xgoal(1,1)+15)
         colormap(jet);
         hold on;
         plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
         plot(Xd(j,:),Yd(j,:),'ro','LineWidth',2);
         %axis([min(min(X_nth)) max(max(X_nth)) min(min(Y_nth)) max(max(Y_nth))]);
-        axis([-2 65 -2 65]);
+        axis([-2 xgoal(1,1)+15 -2 xgoal(1,1)+15]);
         xlabel('x')
         ylabel('y')
         title('Swarm agent position trajectories')
