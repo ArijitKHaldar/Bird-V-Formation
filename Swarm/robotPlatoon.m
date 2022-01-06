@@ -409,18 +409,18 @@ if flag==1
     
     figure(4)
     clf
-    axis([min(min(X_full)) max(max(X_full)) min(min(Y_full)) max(max(Y_full))]);
+%     axis([min(min(X_full)) max(max(X_full)) min(min(Y_full)) max(max(Y_full))]);
     
-    R=20; % Set decimate factor, i.e., downsample to 1/R the original sample rate
+%     R=20; % Set decimate factor, i.e., downsample to 1/R the original sample rate
     
-    for i=1:N
-        
-        Xd(:,i)=decimate(X_full(:,i),R); % Decimate data to speed up movie, 8th order Chebyshev Type I LP filter with f_cutoff=0.8*(Fs/2)/R before resampling
-        Yd(:,i)=decimate(Y_full(:,i),R);
-        
-    end
+%     for i=1:N
+%         
+%         Xd(:,i)=decimate(X_full(:,i),R); % Decimate data to speed up movie, 8th order Chebyshev Type I LP filter with f_cutoff=0.8*(Fs/2)/R before resampling
+%         Yd(:,i)=decimate(Y_full(:,i),R);
+%         
+%     end
     
-    [temp1d,temp2]=size(Xd);
+%     [temp1d,temp2]=size(Xd);
     
     cd ..
     [success,message,messageid] = mkdir(pwd,'Outputs');
@@ -434,15 +434,14 @@ if flag==1
     end
     videosave=VideoWriter(ddtt,'Uncompressed AVI');
     open(videosave);
-    for j=1:temp1d
+    for j=1:size(X_full,1)
         clf;
         contour(xx,yy,zz+zzz,xgoal(1,1)+15)
         colormap(jet);
         hold on;
         plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
-        plot(Xd(j,:),Yd(j,:),'ro','LineWidth',2);
-        %axis([min(min(X_nth)) max(max(X_nth)) min(min(Y_nth)) max(max(Y_nth))]);
-        axis([-2 xgoal(1,1)+15 -2 xgoal(1,1)+15]);
+        plot(X_full(j,:),Y_full(j,:),'ro','LineWidth',2);
+        axis([min(min(X_nth))-10 max(max(X_nth))+15 min(min(Y_nth))-10 max(max(Y_nth))+15]);
         xlabel('x')
         ylabel('y')
         title('Swarm agent position trajectories')
