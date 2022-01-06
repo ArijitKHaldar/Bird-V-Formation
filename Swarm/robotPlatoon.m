@@ -291,6 +291,7 @@ for vel_y_i=1:size(Vy_all,2)
         Vy_full(counter1,:)=Vy_all{1,vel_y_i}(vel_y_j,:);
     end
 end
+clear counter1;clear pos_x_i;clear pos_x_j;clear pos_y_i;clear pos_y_j;clear vel_x_i;clear vel_x_j;clear vel_y_i;clear vel_y_j;
 
 %% Plotting
 %load("nine_agents_no_plot.mat");
@@ -400,22 +401,22 @@ toc
 
 % Next, produce a movie:
 % Set flag to 1 if want to see a movie
-Xd=[];
-Yd=[];
 if flag==1
+    Xd=[];
+    Yd=[];
     tic
     fprintf("\nStarting animated plot...please wait...\n")
     
     figure(4)
     clf
-    axis([min(min(X_nth)) max(max(X_nth)) min(min(Y_nth)) max(max(Y_nth))]);
+    axis([min(min(X_full)) max(max(X_full)) min(min(Y_full)) max(max(Y_full))]);
     
-    R=20; % Set decimate factor
+    R=20; % Set decimate factor, i.e., downsample to 1/R the original sample rate
     
     for i=1:N
         
-        Xd(:,i)=decimate(X_nth(:,i),R);    		% Decimate data to speed up movie
-        Yd(:,i)=decimate(Y_nth(:,i),R);
+        Xd(:,i)=decimate(X_full(:,i),R); % Decimate data to speed up movie, 8th order Chebyshev Type I LP filter with f_cutoff=0.8*(Fs/2)/R before resampling
+        Yd(:,i)=decimate(Y_full(:,i),R);
         
     end
     
@@ -451,12 +452,12 @@ if flag==1
     close(videosave);
     
     hold on % Next, add as the last frame the set of trajectories and end/start points
-    plot(X,Y,'k:');
+    plot(X_full,Y_full,'k:');
     xlabel('x')
     ylabel('y')
     title('Swarm agent position trajectories')
     plot(X0,Y0,'bs');
-    plot(X(temp1,:),Y(temp1,:),'ro','LineWidth',2);
+    plot(X_nth(temp1,:),Y_nth(temp1,:),'ro','LineWidth',2);
     plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
     %M(:,temp1d+1)=getframe; % Add last frame as figure(1)
     
