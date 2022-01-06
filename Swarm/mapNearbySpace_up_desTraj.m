@@ -1,4 +1,5 @@
-function [X,Y,Vx,Vy]=mapNearbySpace_up_desTraj(k1,k2,kv,kf,b,c,X_1,Y_1,Vx_1,Vy_1,xgoal)
+% For all n ~= 1, i.e., for all iterations other than first
+function [X,Y,Vx,Vy]=mapNearbySpace_up_desTraj(k1,k2,kv,kf,b,c,X_1,Y_1,Vx_1,Vy_1,xgoal,obstacle)
 
     Tstep=0.01;
     N=100;
@@ -9,7 +10,7 @@ function [X,Y,Vx,Vy]=mapNearbySpace_up_desTraj(k1,k2,kv,kf,b,c,X_1,Y_1,Vx_1,Vy_1
                     % w1=120 and w2=0.1 give good result ! 03/11/03
     w2=1.0000e-01;
 
-    Dmax=10; % The magnitude of the noise. Since we use uniform noise of Matlab here, Dmax=1.
+%     Dmax=10; % The magnitude of the noise. Since we use uniform noise of Matlab here, Dmax=1.
     ScaleU=10; % This is used to change the magnitude of the control input ux and uy.
 
     % Initialization of position and velocity
@@ -18,14 +19,14 @@ function [X,Y,Vx,Vy]=mapNearbySpace_up_desTraj(k1,k2,kv,kf,b,c,X_1,Y_1,Vx_1,Vy_1
     Vx(1,1:N)=Vx_1(end,:); 
     Vy(1,1:N)=Vy_1(end,:); 
 
-    count1=1;
+%     count1=1;
 
-    for count1=1:50
+    for count1=1:49
 
-        xbar=mean([X(end,:)' Y(end,:)']);       % 2x1 vector of means in X and Y dimensions
-        vbar=mean([Vx(end,:)' Vy(end,:)']);      % and for velocity also
+%         xbar=mean([X(end,:)' Y(end,:)']);       % 2x1 vector of means in X and Y dimensions
+%         vbar=mean([Vx(end,:)' Vy(end,:)']);      % and for velocity also
 
-        ErrorMatrix=[X(end,:)-xbar(1); Y(end,:)-xbar(2); Vx(end,:)-vbar(1); Vy(end,:)-vbar(2)];
+        %ErrorMatrix=[X(end,:)-xbar(1); Y(end,:)-xbar(2); Vx(end,:)-vbar(1); Vy(end,:)-vbar(2)];
 
         EP_hat=[X(end,:); Y(end,:)];
 
@@ -39,13 +40,13 @@ function [X,Y,Vx,Vy]=mapNearbySpace_up_desTraj(k1,k2,kv,kf,b,c,X_1,Y_1,Vx_1,Vy_1
         A=[];
         for i=1:N
     %         NowJ=goalfunction0([X(end,i);Y(end,i)],xgoal,w2) + obstaclefunctionComplex([X(end,i);Y(end,i)],w1);
-            NowJ=goalfunction0([X(end,i);Y(end,i)],xgoal,w2) + obstaclefunction([X(end,i);Y(end,i)],w1);
+            NowJ=goalfunction0([X(end,i);Y(end,i)],xgoal,w2) + obstaclefunction([X(end,i);Y(end,i)],w1,obstacle);
             partial_x=Vx(end,i)*Tstep;
             partial_y=Vy(end,i)*Tstep;
     %         partialJx=goalfunction0([X(end,i)+partial_x;Y(end,i)],xgoal,w2) + obstaclefunctionComplex([X(end,i)+partial_x;Y(end,i)],w1) - NowJ;
     %         partialJy=goalfunction0([X(end,i);Y(end,i)+partial_y],xgoal,w2) + obstaclefunctionComplex([X(end,i);Y(end,i)+partial_y],w1) - NowJ;        
-            partialJx=goalfunction0([X(end,i)+partial_x;Y(end,i)],xgoal,w2) + obstaclefunction([X(end,i)+partial_x;Y(end,i)],w1) - NowJ;
-            partialJy=goalfunction0([X(end,i);Y(end,i)+partial_y],xgoal,w2) + obstaclefunction([X(end,i);Y(end,i)+partial_y],w1) - NowJ;        
+            partialJx=goalfunction0([X(end,i)+partial_x;Y(end,i)],xgoal,w2) + obstaclefunction([X(end,i)+partial_x;Y(end,i)],w1,obstacle) - NowJ;
+            partialJy=goalfunction0([X(end,i);Y(end,i)+partial_y],xgoal,w2) + obstaclefunction([X(end,i);Y(end,i)+partial_y],w1,obstacle) - NowJ;        
             A(i,:)=[partialJx/partial_x partialJy/partial_y];
         end
 
@@ -61,6 +62,6 @@ function [X,Y,Vx,Vy]=mapNearbySpace_up_desTraj(k1,k2,kv,kf,b,c,X_1,Y_1,Vx_1,Vy_1
         Vx(end+1,:)=Vx(end,:) + ux(end,:)*ScaleU*Tstep;
         Vy(end+1,:)=Vy(end,:) + uy(end,:)*ScaleU*Tstep;
 
-        count1=count1+1;
+%         count1=count1+1;
     end
 end
