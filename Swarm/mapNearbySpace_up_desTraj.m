@@ -2,7 +2,7 @@
 function [X,Y,Vx,Vy]=mapNearbySpace_up_desTraj(k1,k2,kv,kf,b,c,X_1,Y_1,Vx_1,Vy_1,xgoal,obstacle)
 
     Tstep=0.01;
-    N=200;
+    N=100;
 
     % Goal position of vehicle
     % xgoal=[80; 80];
