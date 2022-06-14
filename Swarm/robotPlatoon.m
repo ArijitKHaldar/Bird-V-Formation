@@ -138,14 +138,6 @@ Y_nth(1,1:N)=Y0;
 Vx_nth(1,1:N)=Vx0;
 Vy_nth(1,1:N)=Vy0;
 
-X_all{:,1} = X0;
-Y_all{:,1} = Y0;
-
-Vx_all{:,1} = Vx0;
-Vy_all{:,1} = Vy0;
-
-intrmdtSteps(1,1)=1;
-
 % Obstacle positions
 count = 1;
 for o_i=2:0.3:10
@@ -227,7 +219,7 @@ for n=1:Tfinal/Tstep-1
     % This will contain not just the vertex coordinates, rather coordinates of all N agents where they need to be placed next
     pos_target=triangleAgents(N,vertCoor,c);
     
-    [Xtemp,Ytemp,VxTemp,VyTemp,intrmdtSteps(1,n+1)] = updatePosition(X,Y,Vx,Vy,k1,k2,kv,N,b,c,Tstep,ScaleU,pos_target);
+    [Xtemp,Ytemp,VxTemp,VyTemp,intrmdtSteps(1,n)] = updatePosition(X,Y,Vx,Vy,k1,k2,kv,kf,w1,w2,N,b,c,Tstep,ScaleU,xgoal,obstacle,pos_target);
     X = Xtemp(end,:); % Overwriting previous X with new value (1 X N)
     Y = Ytemp(end,:); % Overwriting previous Y with new value (1 X N)
     Vx = VxTemp(end,:); % Overwriting previous Vx with new value (1 X N)
@@ -238,10 +230,10 @@ for n=1:Tfinal/Tstep-1
     Vx_nth(n+1,:) = VxTemp(end,:);
     Vy_nth(n+1,:) = VyTemp(end,:);
     
-    X_all{:,n+1} = Xtemp; % {1 X n}(intrmdtSteps X N)
-    Y_all{:,n+1} = Ytemp;
-    Vx_all{:,n+1} = VxTemp;
-    Vy_all{:,n+1} = VyTemp;
+    X_all{:,n} = Xtemp; % {1 X n}(intrmdtSteps X N)
+    Y_all{:,n} = Ytemp;
+    Vx_all{:,n} = VxTemp;
+    Vy_all{:,n} = VyTemp;
 % Debugging code below for quick visualization
 %    plot(Circle_Co(:,1),Circle_Co(:,2));
 %    hold on;
