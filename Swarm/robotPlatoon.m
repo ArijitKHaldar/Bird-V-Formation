@@ -138,8 +138,8 @@ Y_nth(1,1:N)=Y0;
 Vx_nth(1,1:N)=Vx0;
 Vy_nth(1,1:N)=Vy0;
 
-% Obstacle positions
 count = 1;
+% % Obstacle positions -Z
 for o_i=2:0.3:10
    obstacle(count,1) = o_i;
    obstacle(count,2) = o_i+15;
@@ -155,6 +155,71 @@ for o_i=35:0.3:43
    obstacle(count,2) = o_i-10;
    count = count+1;
 end
+% % Obstacle positions -Rectangle
+% for o_i=20:0.3:35
+%    obstacle(count,1) = o_i;
+%    obstacle(count,2) = 35;
+%    count = count+1;
+% end
+% for o_i=20:0.3:35
+%    obstacle(count,1) = o_i;
+%    obstacle(count,2) = 20;
+%    count = count+1;
+% end
+% for o_i=20:0.3:35
+%    obstacle(count,1) = 20;
+%    obstacle(count,2) = o_i;
+%    count = count+1;
+% end
+% for o_i=20:0.3:35
+%    obstacle(count,1) = 35;
+%    obstacle(count,2) = o_i;
+%    count = count+1;
+% end
+% % Obstacle position - Line Horizontal
+% for o_i=10:0.3:35
+%    obstacle(count,1) = o_i;
+%    obstacle(count,2) = 25;
+%    count = count+1;
+% end
+% % Obstacle position - Line Vertical
+% for o_i=20:0.3:35
+%    obstacle(count,1) = 30;
+%    obstacle(count,2) = o_i;
+%    count = count+1;
+% end
+% % Obstacle position - Y
+% for o_i=20:0.3:27.5
+%     obstacle(count,1) = 27.5+5;
+%     obstacle(count,2) = o_i-5;
+%     count = count+1;
+% end
+% for o_i=27.5:0.3:35
+%     obstacle(count,1) = o_i+5;
+%     obstacle(count,2) = o_i-5;
+%     count = count+1;
+% end
+% for o_i=20:0.3:27.5
+%     obstacle(count,1) = o_i+5;
+%     obstacle(count,2) = 55-o_i-5;
+%     count = count+1;
+% end
+% % Obstacle position - circle
+% oangles = linspace(0, 2*pi,720); % 720 is the total number of points
+% oradius = 10;
+% oxCenter = 25;
+% oyCenter = 36;
+% o_x = oradius * cos(oangles) + oxCenter; 
+% o_y = oradius * sin(oangles) + oyCenter;
+% % Now get random locations along the circle.
+% s1 = 700; % Number of random points to get.
+% randomIndexes = randperm(length(oangles), s1);
+% obstacle(:,1) = o_x(randomIndexes)';
+% obstacle(:,2) = o_y(randomIndexes)';
+% count = size(obstacle,1);
+% % No obstacle
+% obstacle(:,1)=-100;
+% obstacle(:,2)=-100;
 
 % Goal position of vehicle
 xgoal=[50; 
