@@ -140,20 +140,61 @@ Vy_nth(1,1:N)=Vy0;
 
 count = 1;
 % % Obstacle positions -Z
-for o_i=2:0.3:10
-   obstacle(count,1) = o_i;
-   obstacle(count,2) = o_i+15;
-   count = count+1;
+% for o_i=2:0.3:10
+%    obstacle(count,1) = o_i;
+%    obstacle(count,2) = o_i+15;
+%    count = count+1;
+% end
+% for o_i=10:0.3:35
+%    obstacle(count,1) = o_i;
+%    obstacle(count,2) = 25;
+%    count = count+1;
+% end
+% for o_i=35:0.3:43
+%    obstacle(count,1) = o_i;
+%    obstacle(count,2) = o_i-10;
+%    count = count+1;
+% end
+% % Obstacle - Corridor
+for o_i=15:0.3:20
+    obstacle(count,2)=o_i;
+    obstacle(count,1)=55-o_i;
+    count = count+1;
 end
-for o_i=10:0.3:35
-   obstacle(count,1) = o_i;
-   obstacle(count,2) = 25;
-   count = count+1;
+for o_i=4:0.3:40
+    obstacle(count,1) = o_i;
+    obstacle(count,2) = 12;
+    count = count+1;
 end
-for o_i=35:0.3:43
-   obstacle(count,1) = o_i;
-   obstacle(count,2) = o_i-10;
-   count = count+1;
+for o_i=12:0.3:15
+    obstacle(count,1) = 40;
+    obstacle(count,2) = o_i;
+    count = count+1;
+end
+for o_i=12:0.3:20
+    obstacle(count,2)=o_i;
+    obstacle(count,1)=16-o_i;
+    count=count+1;
+end
+for o_i=15:0.3:18
+    obstacle(count,1)=o_i;
+    obstacle(count,2)=12-o_i;
+    count=count+1;
+end
+for o_i=15:0.3:62
+    obstacle(count,1) = o_i;
+    obstacle(count,2) = -3;
+    count = count+1;
+end
+for o_i=-3:0.3:15
+    obstacle(count,1) = 62;
+    obstacle(count,2) = o_i;
+    count = count+1;
+end
+for o_i=62:0.3:67
+    obstacle(count,1)=o_i;
+    obstacle(count,2)=o_i+3-50;
+    count=count+1;
 end
 % % Obstacle positions -Rectangle
 % for o_i=20:0.3:35
