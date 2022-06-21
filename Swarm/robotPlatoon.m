@@ -139,7 +139,7 @@ Vx_nth(1,1:N)=Vx0;
 Vy_nth(1,1:N)=Vy0;
 
 count = 1;
-% % Obstacle positions -Z
+% Obstacle positions -Z
 % for o_i=2:0.3:10
 %    obstacle(count,1) = o_i;
 %    obstacle(count,2) = o_i+15;
@@ -156,46 +156,46 @@ count = 1;
 %    count = count+1;
 % end
 % % Obstacle - Corridor
-for o_i=15:0.3:20
-    obstacle(count,2)=o_i;
-    obstacle(count,1)=55-o_i;
-    count = count+1;
-end
-for o_i=4:0.3:40
-    obstacle(count,1) = o_i;
-    obstacle(count,2) = 12;
-    count = count+1;
-end
-for o_i=12:0.3:15
-    obstacle(count,1) = 40;
-    obstacle(count,2) = o_i;
-    count = count+1;
-end
-for o_i=12:0.3:20
-    obstacle(count,2)=o_i;
-    obstacle(count,1)=16-o_i;
-    count=count+1;
-end
-for o_i=15:0.3:18
-    obstacle(count,1)=o_i;
-    obstacle(count,2)=12-o_i;
-    count=count+1;
-end
-for o_i=15:0.3:62
-    obstacle(count,1) = o_i;
-    obstacle(count,2) = -3;
-    count = count+1;
-end
-for o_i=-3:0.3:15
-    obstacle(count,1) = 62;
-    obstacle(count,2) = o_i;
-    count = count+1;
-end
-for o_i=62:0.3:67
-    obstacle(count,1)=o_i;
-    obstacle(count,2)=o_i+3-50;
-    count=count+1;
-end
+% for o_i=15:0.3:20
+%     obstacle(count,2)=o_i;
+%     obstacle(count,1)=55-o_i;
+%     count = count+1;
+% end
+% for o_i=4:0.3:40
+%     obstacle(count,1) = o_i;
+%     obstacle(count,2) = 12;
+%     count = count+1;
+% end
+% for o_i=12:0.3:15
+%     obstacle(count,1) = 40;
+%     obstacle(count,2) = o_i;
+%     count = count+1;
+% end
+% for o_i=12:0.3:20
+%     obstacle(count,2)=o_i;
+%     obstacle(count,1)=16-o_i;
+%     count=count+1;
+% end
+% for o_i=15:0.3:18
+%     obstacle(count,1)=o_i;
+%     obstacle(count,2)=12-o_i;
+%     count=count+1;
+% end
+% for o_i=15:0.3:62
+%     obstacle(count,1) = o_i;
+%     obstacle(count,2) = -3;
+%     count = count+1;
+% end
+% for o_i=-3:0.3:15
+%     obstacle(count,1) = 62;
+%     obstacle(count,2) = o_i;
+%     count = count+1;
+% end
+% for o_i=62:0.3:67
+%     obstacle(count,1)=o_i;
+%     obstacle(count,2)=o_i+3-50;
+%     count=count+1;
+% end
 % % Obstacle positions -Rectangle
 % for o_i=20:0.3:35
 %    obstacle(count,1) = o_i;
@@ -224,7 +224,7 @@ end
 %    count = count+1;
 % end
 % % Obstacle position - Line Vertical
-% for o_i=20:0.3:35
+% for o_i=27:0.3:42
 %    obstacle(count,1) = 30;
 %    obstacle(count,2) = o_i;
 %    count = count+1;
@@ -232,17 +232,17 @@ end
 % % Obstacle position - Y
 % for o_i=20:0.3:27.5
 %     obstacle(count,1) = 27.5+5;
-%     obstacle(count,2) = o_i-5;
+%     obstacle(count,2) = o_i-10;
 %     count = count+1;
 % end
 % for o_i=27.5:0.3:35
 %     obstacle(count,1) = o_i+5;
-%     obstacle(count,2) = o_i-5;
+%     obstacle(count,2) = o_i-10;
 %     count = count+1;
 % end
 % for o_i=20:0.3:27.5
 %     obstacle(count,1) = o_i+5;
-%     obstacle(count,2) = 55-o_i-5;
+%     obstacle(count,2) = 55-o_i-10;
 %     count = count+1;
 % end
 % % Obstacle position - circle
@@ -259,8 +259,8 @@ end
 % obstacle(:,2) = o_y(randomIndexes)';
 % count = size(obstacle,1);
 % % No obstacle
-% obstacle(:,1)=-100;
-% obstacle(:,2)=-100;
+obstacle(:,1)=-100;
+obstacle(:,2)=-100;
 
 % Goal position of vehicle
 xgoal=[50; 
@@ -424,11 +424,13 @@ end
 
 figure(1) %Plot initialized agents' positions and final goal coordinate
     clf
-    contour(xx,yy,zz+zzz,xgoal(1,1)+15)
-    colormap(jet)
+    plot(obstacle(:,1),obstacle(:,2),'k*','linewidth',2)
+%     contour(xx,yy,zz+zzz,xgoal(1,1)+15)
+%     colormap(jet)
     % Use next line for generating plots to put in black and white documents.
     %colormap(gray)
     hold on;
+    axis([-5 65 -5 65]);
     xlabel('x')
     ylabel('y')
     title('J=w_1J_o + w_2J_g and initial (square) and goal (x) positions');
@@ -483,9 +485,11 @@ figure(2)
 
 figure(3) % Plot trajectory of path taken by agents to reach goal from beginning
     clf
-    contour(xx,yy,zz+zzz,xgoal(1,1)+15)
-    colormap(jet)
+    plot(obstacle(:,1),obstacle(:,2),'k*','linewidth',2)
+%     contour(xx,yy,zz+zzz,xgoal(1,1)+15)
+%     colormap(jet)
     hold on;
+    axis([-5 65 -5 65]);
     plot(xgoal(1),xgoal(2),'gx','MarkerSize',16,'linewidth',2);
     title('Swarm agent position trajectories')
     plot(X_nth(temparray,:),Y_nth(temparray,:),'LineStyle',':') 
